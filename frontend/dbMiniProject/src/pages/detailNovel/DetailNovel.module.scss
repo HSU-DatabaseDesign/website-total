@@ -1,0 +1,667 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.contentArea {
+  padding-top: rem(100px);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.mainLayout {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+// 왼쪽: 책 섹션
+.bookSection {
+  flex: 0 0 350px;
+  
+  .bookCover {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 1.5rem;
+    
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+  
+  .bookInfo {
+    text-align: left;
+    
+    .genre {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      font-size: $font-size-caption;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    
+    .title {
+      font-size: $font-size-title1;
+      font-weight: $font-weight-bold;
+      color: #333;
+      margin: 0.5rem 0;
+    }
+    
+    .author {
+      font-size: $font-size-body;
+      color: #666;
+      margin: 0;
+    }
+    
+    .platform {
+      font-size: $font-size-subhead;
+      color: #5ac8af;
+      margin: 0.5rem 0 0 0;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+// 오른쪽: 리뷰 섹션
+.reviewSection {
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.ratingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  
+  .avgRating {
+    font-size: $font-size-title2;
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0;
+  }
+  
+  .rateButton {
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #f9f9f9;
+    }
+  }
+}
+
+.starDistribution {
+  margin-bottom: 2rem;
+  
+  .starRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    
+    .starLabel {
+      width: 100px;
+      font-size: $font-size-caption;
+      color: #ffd700;
+    }
+    
+    .starBar {
+      flex: 1;
+      height: 20px;
+      background-color: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+      
+      .starBarFill {
+        height: 100%;
+        background-color: #ddd;
+        transition: width 0.3s ease;
+      }
+    }
+  }
+}
+
+.loginBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #7dd3c0 0%, #5ac8af 100%);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  
+  .loginTitle {
+    font-size: $font-size-body;
+    font-weight: $font-weight-bold;
+    color: #ffffff;
+    margin: 0 0 0.25rem 0;
+  }
+  
+  .loginSubtitle {
+    font-size: $font-size-subhead;
+    color: #ffffff;
+    margin: 0;
+  }
+  
+  .loginButton {
+    padding: 0.75rem 1.5rem;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-bold;
+    color: #5ac8af;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.tabNav {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+  
+  .tabButton {
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    color: #666;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      color: #333;
+    }
+    
+    &.active {
+      color: #5ac8af;
+      font-weight: $font-weight-bold;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: #5ac8af;
+      }
+    }
+  }
+}
+
+.reviewList {
+  .reviewItem {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #e0e0e0;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.reviewHeader {
+  margin-bottom: 1rem;
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    
+    .userClickable {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #f0f0f0;
+        
+        .userName {
+          color: #667eea;
+        }
+      }
+    }
+    
+    .userAvatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: rem(16px);
+      font-weight: $font-weight-bold;
+      color: #ffffff;
+    }
+    
+    .userName {
+      font-size: $font-size-body;
+      font-weight: $font-weight-bold;
+      color: #333;
+      transition: color 0.3s ease;
+    }
+    
+    .userLevel {
+      font-size: $font-size-subhead;
+      color: #999;
+      margin-left: 0.5rem;
+    }
+    
+    .reviewRating {
+      margin-left: auto;
+      font-size: $font-size-body;
+    }
+  }
+}
+
+.reviewContent {
+  font-size: $font-size-body;
+  line-height: 1.6;
+  color: #333;
+  margin: 0 0 1rem 0;
+  white-space: pre-line;
+}
+
+.reviewFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .reviewDate {
+    font-size: $font-size-caption;
+    color: #999;
+  }
+  
+  .reviewActions {
+    display: flex;
+    gap: 0.5rem;
+    
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #f5f5f5;
+      border: none;
+      border-radius: 6px;
+      font-size: $font-size-subhead;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #e0e0e0;
+      }
+    }
+  }
+}
+
+// 리뷰 작성 영역
+.reviewActionBar {
+  margin: 1.5rem 0;
+  
+  .writeReviewButton {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+  }
+}
+
+.reviewForm {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  
+  .ratingInput {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    
+    label {
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+    }
+    
+    select {
+      padding: 0.5rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: $font-size-body;
+      cursor: pointer;
+      
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+    }
+  }
+  
+  .reviewTextarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: $font-size-body;
+    resize: vertical;
+    margin-bottom: 1rem;
+    font-family: inherit;
+    
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+  }
+  
+  .submitReviewButton {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+  }
+}
+
+.reviewManageButtons {
+  display: flex;
+  gap: 0.5rem;
+  
+  button {
+    padding: 0.5rem 0.75rem;
+    background-color: transparent;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: $font-size-caption;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &.editButton:hover {
+      background-color: #e3f2fd;
+      border-color: #2196f3;
+      color: #2196f3;
+    }
+    
+    &.deleteButton:hover {
+      background-color: #ffebee;
+      border-color: #f44336;
+      color: #f44336;
+    }
+  }
+}
+
+.emptyReviews {
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+  font-size: $font-size-body;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: rem(18px);
+  color: #666;
+}
+
+
+
+// 컬렉션 선택 모달
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  
+  h3 {
+    font-size: rem(20px);
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0;
+  }
+  
+  .closeButton {
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    font-size: rem(20px);
+    color: #666;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+}
+
+.modalBody {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  
+  .newCollectionButton {
+    width: 100%;
+    padding: 1rem;
+    background-color: #f0f7ff;
+    border: 2px dashed #667eea;
+    border-radius: 8px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    color: #667eea;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #e0edff;
+    }
+  }
+  
+  .newCollectionForm {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: $font-size-body;
+      margin-bottom: 0.75rem;
+      
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+    }
+    
+    .formButtons {
+      display: flex;
+      gap: 0.5rem;
+      
+      .createBtn {
+        flex: 1;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 6px;
+        font-size: $font-size-body;
+        font-weight: $font-weight-bold;
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+      }
+      
+      .cancelBtn {
+        flex: 1;
+        padding: 0.75rem;
+        background-color: #e0e0e0;
+        border: none;
+        border-radius: 6px;
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: #d0d0d0;
+        }
+      }
+    }
+  }
+  
+  .emptyCollections {
+    text-align: center;
+    padding: 2rem;
+    
+    p {
+      font-size: $font-size-body;
+      color: #666;
+      margin: 0 0 1rem 0;
+    }
+    
+    .createCollectionButton {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      font-size: $font-size-body;
+      font-weight: $font-weight-bold;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+    }
+  }
+  
+  .collectionList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .collectionItem {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #e8f4fd;
+        transform: translateX(5px);
+      }
+      
+      .collectionName {
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        color: #333;
+      }
+      
+      .collectionCount {
+        font-size: $font-size-caption;
+        color: #666;
+        background-color: #e0e0e0;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+      }
+    }
+  }
+}

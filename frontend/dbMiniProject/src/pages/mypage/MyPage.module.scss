@@ -1,0 +1,993 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.contentArea {
+  padding-top: rem(100px);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-bottom: 3rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: rem(18px);
+  color: #666;
+}
+
+// 프로필 섹션
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.profileAvatar {
+  .avatarCircle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: rem(40px);
+    font-weight: $font-weight-bold;
+    color: #ffffff;
+  }
+}
+
+.profileInfo {
+  flex: 1;
+  
+  .username {
+    font-size: rem(28px);
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .email {
+    font-size: $font-size-body;
+    color: #666;
+    margin: 0 0 0.25rem 0;
+  }
+  
+  .joinDate {
+    font-size: $font-size-subhead;
+    color: #999;
+    margin: 0;
+  }
+}
+
+.profileStats {
+  display: flex;
+  gap: 2rem;
+  
+  .statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    
+    .statNumber {
+      font-size: rem(28px);
+      font-weight: $font-weight-bold;
+      color: #667eea;
+    }
+    
+    .statLabel {
+      font-size: $font-size-subhead;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+.profileActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.badgeButton {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  border: none;
+  border-radius: 12px;
+  font-size: $font-size-body;
+  font-weight: $font-weight-bold;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(252, 182, 159, 0.4);
+  }
+}
+
+.editButton {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  font-size: $font-size-body;
+  font-weight: $font-weight-bold;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  }
+}
+
+.deleteButton {
+  padding: 0.875rem 2rem;
+  background-color: #f44336;
+  border: none;
+  border-radius: 12px;
+  font-size: $font-size-body;
+  font-weight: $font-weight-bold;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+  }
+}
+
+.followButton {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  border: none;
+  border-radius: 12px;
+  font-size: $font-size-body;
+  font-weight: $font-weight-bold;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(168, 237, 234, 0.4);
+  }
+}
+
+// 회원 정보 수정 폼
+.editForm {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  
+  h3 {
+    font-size: rem(24px);
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0 0 1.5rem 0;
+  }
+  
+  .formGroup {
+    margin-bottom: 1.5rem;
+    
+    label {
+      display: block;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: $font-size-body;
+      transition: all 0.3s ease;
+      
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+    }
+  }
+  
+  .formActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    
+    .saveButton {
+      padding: 0.875rem 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      font-size: $font-size-body;
+      font-weight: $font-weight-bold;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+      }
+    }
+    
+    .cancelButton {
+      padding: 0.875rem 2rem;
+      background-color: #e0e0e0;
+      border: none;
+      border-radius: 8px;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #d0d0d0;
+      }
+    }
+  }
+}
+
+// 탭 네비게이션
+.tabNav {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+  background-color: #ffffff;
+  border-radius: 12px 12px 0 0;
+  padding: 0 1rem;
+  
+  .tabButton {
+    padding: 1rem 2rem;
+    background: none;
+    border: none;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    color: #666;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      color: #333;
+    }
+    
+    &.active {
+      color: #667eea;
+      font-weight: $font-weight-bold;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: #667eea;
+      }
+    }
+  }
+}
+
+// 컨텐츠 섹션
+.contentSection {
+  background-color: #ffffff;
+  border-radius: 0 0 12px 12px;
+  padding: 2rem;
+  min-height: 400px;
+}
+
+// 리뷰 리스트
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reviewCard {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bookCover {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reviewContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    .bookTitle {
+      font-size: $font-size-title2;
+      font-weight: $font-weight-bold;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .reviewRating {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      
+      .ratingValue {
+        font-size: $font-size-body;
+        font-weight: $font-weight-bold;
+        color: #666;
+      }
+    }
+    
+    .reviewText {
+      font-size: $font-size-body;
+      color: #666;
+      line-height: 1.6;
+      margin: 0 0 1rem 0;
+      flex: 1;
+    }
+    
+    .reviewFooter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .reviewDate {
+        font-size: $font-size-caption;
+        color: #999;
+      }
+      
+      .reviewLikes {
+        font-size: $font-size-subhead;
+        color: #667eea;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+}
+
+// 별점 리스트
+.ratingList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.ratingCard {
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bookCover {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+  }
+  
+  .ratingContent {
+    padding: 1rem;
+    
+    .bookTitle {
+      font-size: $font-size-body;
+      font-weight: $font-weight-bold;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .ratingStars {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      
+      .ratingValue {
+        font-size: $font-size-subhead;
+        font-weight: $font-weight-bold;
+        color: #666;
+      }
+    }
+    
+    .ratingDate {
+      font-size: $font-size-caption;
+      color: #999;
+    }
+  }
+}
+
+// 컬렉션 리스트
+.collectionList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.collectionCard {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+  }
+  
+  .collectionCovers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 0.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    .coverImg {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+  }
+  
+  .collectionInfo {
+    padding: 1.5rem;
+    
+    .collectionName {
+      font-size: $font-size-title2;
+      font-weight: $font-weight-bold;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      
+      &:hover {
+        color: #667eea;
+      }
+    }
+    
+    .collectionDescription {
+      font-size: $font-size-subhead;
+      color: #666;
+      margin: 0 0 1rem 0;
+      line-height: 1.5;
+    }
+    
+    .collectionCount {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background-color: #667eea;
+      color: #ffffff;
+      font-size: $font-size-caption;
+      font-weight: $font-weight-bold;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+    }
+    
+    .collectionMeta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      
+      .collectionOwner {
+        font-size: $font-size-caption;
+        color: #667eea;
+        cursor: pointer;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+      
+      .collectionCount {
+        margin-bottom: 0;
+      }
+      
+      .collectionSaveCount {
+        font-size: $font-size-caption;
+        color: #666;
+      }
+    }
+    
+    .collectionButtons {
+      display: flex;
+      gap: 0.5rem;
+      
+      .editCollectionButton {
+        flex: 1;
+        padding: 0.75rem;
+        background-color: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 8px;
+        font-size: $font-size-subhead;
+        font-weight: $font-weight-medium;
+        color: #2196f3;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: #2196f3;
+          color: #ffffff;
+        }
+      }
+      
+      .deleteCollectionButton {
+        flex: 1;
+        padding: 0.75rem;
+        background-color: #ffebee;
+        border: 1px solid #f44336;
+        border-radius: 8px;
+        font-size: $font-size-subhead;
+        font-weight: $font-weight-medium;
+        color: #f44336;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: #f44336;
+          color: #ffffff;
+        }
+      }
+      
+      .unsaveButton {
+        flex: 1;
+        padding: 0.75rem;
+        background-color: #fff3e0;
+        border: 1px solid #ff9800;
+        border-radius: 8px;
+        font-size: $font-size-subhead;
+        font-weight: $font-weight-medium;
+        color: #ff9800;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: #ff9800;
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}
+
+// 컬렉션 액션 버튼
+.collectionActions {
+  margin-bottom: 2rem;
+  
+  .createCollectionButton {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-bold;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+  }
+}
+
+// 컬렉션 폼
+.collectionForm {
+  background-color: #f8f9fa;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  
+  h3 {
+    font-size: rem(24px);
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0 0 1.5rem 0;
+  }
+  
+  .formGroup {
+    margin-bottom: 1.5rem;
+    
+    label {
+      display: block;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: $font-size-body;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+    }
+    
+    textarea {
+      resize: vertical;
+    }
+  }
+  
+  .formActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    
+    .saveButton {
+      padding: 0.875rem 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      font-size: $font-size-body;
+      font-weight: $font-weight-bold;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+      }
+    }
+    
+    .cancelButton {
+      padding: 0.875rem 2rem;
+      background-color: #e0e0e0;
+      border: none;
+      border-radius: 8px;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #d0d0d0;
+      }
+    }
+  }
+}
+
+.emptyCollections {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  font-size: $font-size-body;
+  color: #999;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+
+
+// 팔로우 섹션
+.followSection {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+// 빈 리뷰 메시지
+.emptyReviews {
+  text-align: center;
+  padding: 3rem;
+  font-size: $font-size-body;
+  color: #999;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+// 배지 섹션
+.badgeSection {
+  .badgeHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    h3 {
+      font-size: rem(20px);
+      font-weight: $font-weight-bold;
+      color: #333;
+      margin: 0;
+    }
+    
+    .viewAllBadgesButton {
+      padding: 0.5rem 1rem;
+      background: none;
+      border: 1px solid #667eea;
+      border-radius: 8px;
+      font-size: $font-size-subhead;
+      color: #667eea;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #667eea;
+        color: #ffffff;
+      }
+    }
+  }
+  
+  .badgeGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .badgeCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .badgeImage {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      
+      .badgeEmoji {
+        font-size: rem(40px);
+      }
+    }
+    
+    .badgeInfo {
+      flex: 1;
+      
+      .badgeName {
+        font-size: $font-size-body;
+        font-weight: $font-weight-bold;
+        color: #333;
+        margin: 0 0 0.25rem 0;
+      }
+      
+      .badgeMission {
+        font-size: $font-size-caption;
+        color: #666;
+        margin: 0;
+      }
+    }
+  }
+  
+  .emptyBadges {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    font-size: $font-size-body;
+    color: #999;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+  }
+}
+
+// 팔로우 모달
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  
+  .modalTabs {
+    display: flex;
+    gap: 0.5rem;
+    
+    .modalTab {
+      padding: 0.5rem 1rem;
+      background: none;
+      border: none;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      color: #666;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      
+      &.active {
+        background-color: #667eea;
+        color: #ffffff;
+      }
+      
+      &:hover:not(.active) {
+        background-color: #f0f0f0;
+      }
+    }
+  }
+  
+  .closeButton {
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    font-size: rem(20px);
+    color: #666;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+}
+
+.modalBody {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.followItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .followAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: rem(18px);
+    font-weight: $font-weight-bold;
+    color: #ffffff;
+  }
+  
+  .followInfo {
+    flex: 1;
+    
+    .followName {
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      color: #333;
+    }
+  }
+  
+  .unfollowButton {
+    padding: 0.5rem 1rem;
+    background-color: #f44336;
+    border: none;
+    border-radius: 8px;
+    font-size: $font-size-caption;
+    font-weight: $font-weight-medium;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #d32f2f;
+    }
+  }
+  
+  .followBackButton {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    font-size: $font-size-caption;
+    font-weight: $font-weight-medium;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+  }
+}
+
+.emptyFollow {
+  text-align: center;
+  padding: 2rem;
+  font-size: $font-size-body;
+  color: #999;
+}

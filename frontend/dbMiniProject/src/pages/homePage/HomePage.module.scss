@@ -1,0 +1,58 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #f0f0f0;
+}
+
+.contentArea {
+  padding-top: rem(80px);
+}
+
+.titleSection {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin-bottom: 1rem;
+  
+  .mainTitle {
+    font-size: rem(32px);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .mainContent {
+    font-size: rem(16px);
+    white-space: pre-line;
+    opacity: 0.9;
+  }
+}
+
+.cardArea {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  margin-top: 2rem;
+  min-height: 500px;
+  z-index: 1;
+}
+
+.loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  font-size: rem(18px);
+  color: #666;
+}
+
+.emptyMessage {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  font-size: rem(18px);
+  color: #999;
+}
+

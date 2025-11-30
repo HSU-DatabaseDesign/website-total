@@ -1,0 +1,5 @@
+# Shell scripts - 항상 LF 유지 (Git Bash 호환)
+*.sh text eol=lf
+
+# Gradle wrapper
+gradlew text eol=lf

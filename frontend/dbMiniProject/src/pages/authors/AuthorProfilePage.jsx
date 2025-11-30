@@ -1,0 +1,221 @@
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import styles from './AuthorProfilePage.module.scss'
+import { Header } from '../../components/Header'
+import { Bird } from '../../assets'
+import { readAuthorApi } from '../../apis/authors/authors'
+import { readUserReviewsApi } from '../../apis/reviews/reviews'
+import { readUserCollectionApi } from '../../apis/collections/collections'
+import { readNovelApi } from '../../apis/novels/novel'
+
+export const AuthorProfilePage = () => {
+  const { userId } = useParams()
+  const navigate = useNavigate()
+  const [author, setAuthor] = useState(null)
+  const [reviews, setReviews] = useState([])
+  const [collections, setCollections] = useState([])
+  const [novels, setNovels] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [selectedTab, setSelectedTab] = useState(0)
+
+  const tabs = ['작품', '리뷰', '컬렉션']
+
+  useEffect(() => {
+    const fetchAuthorData = async () => {
+      setLoading(true)
+
+      // 작가 프로필 조회
+      const authorResult = await readAuthorApi(userId)
+      if (authorResult.ok && authorResult.data) {
+        setAuthor(authorResult.data)
+        
+        // 작가의 작품 조회 (작가 이름으로 필터링)
+        const novelsResult = await readNovelApi()
+        if (novelsResult.ok && novelsResult.data) {
+          const authorNovels = novelsResult.data.filter(
+            novel => novel.novelAuthor === authorResult.data.penName
+          )
+          setNovels(authorNovels)
+        }
+      } else {
+        // 임시 데이터
+        setAuthor({
+          userId: userId,
+          penName: '이영도',
+          nationality: '대한민국',
+          debutYear: '1998',
+          brief: '판타지 소설의 거장. 눈물을 마시는 새, 피를 마시는 새 등의 작품으로 유명합니다.',
+          profileImage: null,
+          isConfirmed: true
+        })
+      }
+
+      // 작가의 리뷰 조회
+      const reviewsResult = await readUserReviewsApi(userId)
+      if (reviewsResult.ok && reviewsResult.data) {
+        setReviews(reviewsResult.data)
+      }
+
+      // 작가의 컬렉션 조회
+      const collectionsResult = await readUserCollectionApi(userId)
+      if (collectionsResult.ok && collectionsResult.data) {
+        setCollections(collectionsResult.data)
+      }
+
+      setLoading(false)
+    }
+
+    fetchAuthorData()
+  }, [userId])
+
+  const handleNovelClick = (novelId) => {
+    navigate(`/detail/${novelId}`)
+  }
+
+  const handleCollectionClick = (collectionId) => {
+    navigate(`/collection/${collectionId}`)
+  }
+
+  if (loading || !author) {
+    return (
+      <div className={styles.pageContainer}>
+        <Header />
+        <div className={styles.contentArea}>
+          <div className={styles.loading}>로딩 중...</div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles.pageContainer}>
+      <Header />
+      <div className={styles.contentArea}>
+        {/* 작가 프로필 헤더 */}
+        <div className={styles.profileHeader}>
+          <div className={styles.profileAvatar}>
+            {author.profileImage ? (
+              <img src={author.profileImage} alt={author.penName} />
+            ) : (
+              <span>{author.penName?.charAt(0) || '?'}</span>
+            )}
+          </div>
+          <div className={styles.profileInfo}>
+            <div className={styles.authorBadge}>✍️ 작가</div>
+            <h1 className={styles.penName}>{author.penName}</h1>
+            <p className={styles.nationality}>{author.nationality}</p>
+            <p className={styles.debutYear}>데뷔: {author.debutYear}년</p>
+            <p className={styles.brief}>{author.brief}</p>
+          </div>
+          <div className={styles.profileStats}>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>{novels.length}</span>
+              <span className={styles.statLabel}>작품</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>{reviews.length}</span>
+              <span className={styles.statLabel}>리뷰</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>{collections.length}</span>
+              <span className={styles.statLabel}>컬렉션</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 탭 네비게이션 */}
+        <nav className={styles.tabNav}>
+          {tabs.map((tab, index) => (
+            <button
+              key={index}
+              className={`${styles.tabButton} ${selectedTab === index ? styles.active : ''}`}
+              onClick={() => setSelectedTab(index)}
+            >
+              {tab}
+            </button>
+          ))}
+        </nav>
+
+        {/* 컨텐츠 영역 */}
+        <div className={styles.contentSection}>
+          {/* 작품 탭 */}
+          {selectedTab === 0 && (
+            <div className={styles.novelGrid}>
+              {novels.length === 0 ? (
+                <div className={styles.emptyMessage}>등록된 작품이 없습니다.</div>
+              ) : (
+                novels.map((novel) => (
+                  <div 
+                    key={novel.novelId} 
+                    className={styles.novelCard}
+                    onClick={() => handleNovelClick(novel.novelId)}
+                  >
+                    <img src={Bird} alt={novel.novelName} className={styles.novelCover} />
+                    <div className={styles.novelInfo}>
+                      <h3 className={styles.novelTitle}>{novel.novelName}</h3>
+                      <span className={styles.novelGenre}>{novel.genre}</span>
+                      <span className={styles.novelStatus}>
+                        {novel.novelStatus === 'COMPLETED' ? '완결' : '연재중'}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* 리뷰 탭 */}
+          {selectedTab === 1 && (
+            <div className={styles.reviewList}>
+              {reviews.length === 0 ? (
+                <div className={styles.emptyMessage}>작성한 리뷰가 없습니다.</div>
+              ) : (
+                reviews.map((review) => (
+                  <div 
+                    key={review.reviewId} 
+                    className={styles.reviewCard}
+                    onClick={() => handleNovelClick(review.novelId)}
+                  >
+                    <div className={styles.reviewHeader}>
+                      <h4 className={styles.novelName}>{review.novelName}</h4>
+                      <span className={styles.reviewRating}>⭐ {review.star}</span>
+                    </div>
+                    <p className={styles.reviewContent}>{review.content}</p>
+                    <div className={styles.reviewFooter}>
+                      <span className={styles.likeCount}>👍 {review.likeCount || 0}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* 컬렉션 탭 */}
+          {selectedTab === 2 && (
+            <div className={styles.collectionGrid}>
+              {collections.length === 0 ? (
+                <div className={styles.emptyMessage}>생성한 컬렉션이 없습니다.</div>
+              ) : (
+                collections.map((collection) => (
+                  <div 
+                    key={collection.collectionId} 
+                    className={styles.collectionCard}
+                    onClick={() => handleCollectionClick(collection.collectionId)}
+                  >
+                    <div className={styles.collectionCover}>
+                      <img src={Bird} alt={collection.collectionName} />
+                    </div>
+                    <div className={styles.collectionInfo}>
+                      <h3 className={styles.collectionName}>{collection.collectionName}</h3>
+                      <span className={styles.novelCount}>{collection.novelCount || 0}권</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

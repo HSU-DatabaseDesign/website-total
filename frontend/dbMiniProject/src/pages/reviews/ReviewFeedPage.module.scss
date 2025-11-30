@@ -1,0 +1,225 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.contentArea {
+  padding-top: rem(100px);
+  padding-bottom: 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.pageHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  .pageTitle {
+    font-size: rem(36px);
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .pageSubtitle {
+    font-size: $font-size-body;
+    color: #666;
+    margin: 0;
+  }
+}
+
+.sortOptions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  
+  .sortButton {
+    padding: 0.75rem 1.5rem;
+    background-color: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+    
+    &.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: transparent;
+      color: #ffffff;
+    }
+  }
+}
+
+.loading, .emptyMessage {
+  text-align: center;
+  padding: 3rem;
+  font-size: $font-size-body;
+  color: #999;
+  background-color: #ffffff;
+  border-radius: 16px;
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reviewCard {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+}
+
+.novelInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  cursor: pointer;
+  
+  .novelCover {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .novelDetails {
+    .novelTitle {
+      font-size: $font-size-headline;
+      font-weight: $font-weight-bold;
+      color: #ffffff;
+      margin: 0 0 0.25rem 0;
+    }
+    
+    .novelGenre {
+      font-size: $font-size-caption;
+      color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+  }
+}
+
+.reviewContent {
+  padding: 1.5rem;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #f0f0f0;
+      
+      .userName {
+        color: #667eea;
+      }
+    }
+    
+    .userAvatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: rem(18px);
+      font-weight: $font-weight-bold;
+      color: #333;
+    }
+    
+    .userName {
+      font-size: $font-size-body;
+      font-weight: $font-weight-bold;
+      color: #333;
+      transition: color 0.3s ease;
+    }
+  }
+  
+  .reviewRating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    .ratingValue {
+      font-size: $font-size-body;
+      font-weight: $font-weight-bold;
+      color: #666;
+    }
+  }
+}
+
+.reviewText {
+  font-size: $font-size-body;
+  line-height: 1.7;
+  color: #333;
+  margin: 0 0 1rem 0;
+  white-space: pre-line;
+}
+
+.reviewFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+  
+  .reviewViews {
+    font-size: $font-size-subhead;
+    color: #999;
+  }
+  
+  .likeButton {
+    padding: 0.5rem 1rem;
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: $font-size-subhead;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #e3f2fd;
+      border-color: #2196f3;
+      color: #2196f3;
+    }
+  }
+}

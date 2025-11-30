@@ -1,0 +1,197 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+.contentArea {
+  padding-top: rem(100px);
+  padding-bottom: rem(50px);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.headerSection {
+  text-align: center;
+  margin-bottom: 3rem;
+  
+  .pageTitle {
+    font-size: rem(48px);
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0 0 1rem 0;
+  }
+  
+  .pageSubtitle {
+    font-size: $font-size-title2;
+    color: #666;
+    margin: 0;
+  }
+}
+
+// 카테고리 네비게이션
+.categoryNav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  
+  .categoryButton {
+    padding: 0.75rem 2rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 2px solid transparent;
+    border-radius: 25px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #ffffff;
+      transform: translateY(-2px);
+    }
+    
+    &.active {
+      background-color: #ffffff;
+      border-color: #ff9a76;
+      color: #ff6b45;
+      font-weight: $font-weight-bold;
+      box-shadow: 0 4px 12px rgba(255, 107, 69, 0.2);
+    }
+  }
+}
+
+// 배지 그리드
+.badgeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.badgeCard {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.locked {
+    background-color: rgba(255, 255, 255, 0.7);
+    
+    .badgeName {
+      color: #999;
+    }
+    
+    .badgeDescription {
+      color: #aaa;
+    }
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  // 획득한 배지 강조
+  &:not(.locked) {
+    border-color: #ff9a76;
+    box-shadow: 0 4px 16px rgba(255, 154, 118, 0.25);
+    
+    &:hover {
+      box-shadow: 0 8px 24px rgba(255, 154, 118, 0.35);
+    }
+  }
+}
+
+.badgeImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  
+  .badgeImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: all 0.3s ease;
+  }
+  
+  .unlockedCheck {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 201, 255, 0.4);
+  }
+}
+
+.badgeInfo {
+  text-align: center;
+  
+  .badgeName {
+    font-size: $font-size-title2;
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .badgeDescription {
+    font-size: $font-size-body;
+    color: #666;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+.progressSection {
+  margin-top: 1rem;
+  
+  .progressBar {
+    width: 100%;
+    height: 10px;
+    background-color: #e8e8e8;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    
+    .progressFill {
+      height: 100%;
+      background: linear-gradient(90deg, #ffb88c 0%, #ff9a76 100%);
+      border-radius: 5px;
+      transition: width 0.5s ease;
+      
+      &.completed {
+        background: linear-gradient(90deg, #00c9ff 0%, #92fe9d 100%);
+      }
+    }
+  }
+  
+  .progressText {
+    font-size: $font-size-subhead;
+    color: #888;
+    font-weight: $font-weight-medium;
+  }
+}
+

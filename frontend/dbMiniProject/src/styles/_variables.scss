@@ -1,0 +1,25 @@
+// @use './variables' as *; 불러오기
+// color: $color-primary 사용
+
+// 색상
+$color-primary: #ffffff;
+$color-secondary: #ffe3c8;
+$color-black: #000000;
+$color-white: #ffffff;
+$color-gray0: #999999;
+$color-gray1: #bfbfbf;
+$color-gray2: #e2e2e2;
+$color-gray3: #f5f5f5;
+
+// 폰트
+$font-size-title1: 1.625rem; // 26pt (26 / 16)
+$font-size-title2: 1.375rem; // 22pt (22 / 16)
+$font-size-headline: 1.0625rem; // 17pt (17 / 16)
+$font-size-body: 1.0625rem; // 17pt (17 / 16)
+$font-size-subhead: 0.9375rem; // 15pt (15 / 16)
+$font-size-caption: 0.8125rem; // 13pt (13 / 16)
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;

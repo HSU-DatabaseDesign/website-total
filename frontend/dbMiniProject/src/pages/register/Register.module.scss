@@ -1,0 +1,172 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.contentArea {
+  padding-top: rem(100px);
+  padding-bottom: rem(50px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px);
+}
+
+.registerBox {
+  width: 100%;
+  max-width: 500px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  font-size: rem(32px);
+  font-weight: $font-weight-bold;
+  color: #333;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: $font-size-body;
+  color: #666;
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.errorMessage {
+  background-color: #fee;
+  color: #c33;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: $font-size-subhead;
+  text-align: center;
+  border: 1px solid #fcc;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  
+  label {
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    color: #333;
+  }
+  
+  input {
+    padding: 0.875rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: $font-size-body;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      outline: none;
+      border-color: #f5576c;
+      box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+    }
+    
+    &::placeholder {
+      color: #999;
+    }
+  }
+}
+
+.terms {
+  margin-top: -0.5rem;
+}
+
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+  
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  
+  span {
+    font-size: $font-size-subhead;
+    color: #666;
+    line-height: 1.5;
+    
+    a {
+      color: #f5576c;
+      text-decoration: none;
+      font-weight: $font-weight-medium;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.submitButton {
+  padding: 1rem;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: $font-size-body;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.loginLink {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  
+  span {
+    font-size: $font-size-body;
+    color: #666;
+  }
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: #f5576c;
+  font-size: $font-size-body;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  
+  &:hover {
+    color: #e04560;
+    text-decoration: underline;
+  }
+}
+
