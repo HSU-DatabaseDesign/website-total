@@ -1,5 +1,4 @@
 import MainIcon from '@/assets/MainIcon.png';
-import Bird from '@/assets/bird.webp';
 import Check5 from '@/assets/check_5.png';
 import Check10 from '@/assets/check_10.png';
 import Check30 from '@/assets/check_30.png';
@@ -31,10 +30,11 @@ import Novel17 from '@/assets/novel_17.png';
 import Novel18 from '@/assets/novel_18.png';
 import Novel19 from '@/assets/novel_19.png';
 import Novel20 from '@/assets/novel_20.png';
+// Empty 이미지 임시로 novel_1 사용 (empty.png 문제 시)
+import Empty from '@/assets/novel_1.png';
 
 export {
   MainIcon,
-  Bird,
   Check5,
   Check10,
   Check30,
@@ -64,4 +64,5 @@ export {
   Novel18,
   Novel19,
   Novel20,
+  Empty,
 };

@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './CollectionListPage.module.scss'
 import { Header } from '../../components/Header'
-import { Bird } from '../../assets'
-import { readAllCollectionsApi, saveCollectionApi, unsaveCollectionApi } from '../../apis/collections/collections'
+import { Novel1, Novel2, Novel3, Novel4, Novel5, Novel6, Novel7, Novel8, Novel9, Novel10, Novel11, Novel12, Novel13, Novel14, Novel15, Novel16, Novel17, Novel18, Novel19, Novel20, Empty } from '../../assets'
+import { readAllCollectionsApi, readCollectionDetailApi, saveCollectionApi, unsaveCollectionApi } from '../../apis/collections/collections'
 
 export const CollectionListPage = () => {
   const navigate = useNavigate()
@@ -14,17 +14,41 @@ export const CollectionListPage = () => {
   
   const currentUserId = localStorage.getItem('userId')
   
+  // 소설 ID에 맞는 이미지 가져오기
+  const getNovelImage = (novelId) => {
+    const novelImages = {
+      1: Novel1, 2: Novel2, 3: Novel3, 4: Novel4, 5: Novel5,
+      6: Novel6, 7: Novel7, 8: Novel8, 9: Novel9, 10: Novel10,
+      11: Novel11, 12: Novel12, 13: Novel13, 14: Novel14, 15: Novel15,
+      16: Novel16, 17: Novel17, 18: Novel18, 19: Novel19, 20: Novel20,
+    };
+    return novelImages[novelId] || Empty;
+  };
+  
   const fetchCollections = async () => {
     setLoading(true)
     const result = await readAllCollectionsApi(currentUserId)
     if (result.ok && result.data) {
-      // 백엔드 데이터를 프론트엔드 형식으로 변환
-      const transformed = result.data.map(c => {
-        // 소설 수에 따라 커버 이미지 개수 결정 (최대 4개)
-        const imageCount = Math.min(c.novelCount || 0, 4)
-        const coverImages = imageCount > 0 
-          ? Array(imageCount).fill(Bird) 
-          : [Bird]
+      // 각 컬렉션의 상세 정보를 가져와서 소설 이미지 설정
+      const transformedPromises = result.data.map(async (c) => {
+        let coverImages = [Empty] // 기본값: 빈 이미지
+        
+        // 소설이 있는 경우 상세 정보 조회
+        if (c.novelCount > 0) {
+          const detailResult = await readCollectionDetailApi(c.collectionId, currentUserId)
+          if (detailResult.ok && detailResult.data && detailResult.data.novels) {
+            const novels = detailResult.data.novels
+            const novelIds = novels.map(n => n.novelId)
+            
+            if (novelIds.length >= 4) {
+              // 4권 이상: 처음 4개 이미지 표시
+              coverImages = novelIds.slice(0, 4).map(id => getNovelImage(id))
+            } else if (novelIds.length > 0) {
+              // 3권 이하: 첫 번째 이미지만 표시
+              coverImages = [getNovelImage(novelIds[0])]
+            }
+          }
+        }
         
         return {
           id: c.collectionId,
@@ -39,6 +63,8 @@ export const CollectionListPage = () => {
           createdAt: c.createdAt || new Date().toISOString()
         }
       })
+      
+      const transformed = await Promise.all(transformedPromises)
       setCollections(transformed)
       setSortedCollections(transformed)
     } else {

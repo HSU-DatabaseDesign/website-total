@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import styles from './AuthorProfilePage.module.scss'
 import { Header } from '../../components/Header'
-import { Bird } from '../../assets'
+import { Empty } from '../../assets'
 import { readAuthorApi } from '../../apis/authors/authors'
 import { readUserReviewsApi } from '../../apis/reviews/reviews'
 import { readUserCollectionApi } from '../../apis/collections/collections'
@@ -150,7 +150,7 @@ export const AuthorProfilePage = () => {
                     className={styles.novelCard}
                     onClick={() => handleNovelClick(novel.novelId)}
                   >
-                    <img src={Bird} alt={novel.novelName} className={styles.novelCover} />
+                    <img src={Empty} alt={novel.novelName} className={styles.novelCover} />
                     <div className={styles.novelInfo}>
                       <h3 className={styles.novelTitle}>{novel.novelName}</h3>
                       <span className={styles.novelGenre}>{novel.genre}</span>
@@ -203,7 +203,7 @@ export const AuthorProfilePage = () => {
                     onClick={() => handleCollectionClick(collection.collectionId)}
                   >
                     <div className={styles.collectionCover}>
-                      <img src={Bird} alt={collection.collectionName} />
+                      <img src={Empty} alt={collection.collectionName} />
                     </div>
                     <div className={styles.collectionInfo}>
                       <h3 className={styles.collectionName}>{collection.collectionName}</h3>

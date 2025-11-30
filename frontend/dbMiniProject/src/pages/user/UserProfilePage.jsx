@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import styles from './UserProfilePage.module.scss'
 import { Header } from '../../components/Header'
-import { Bird, Check5, Check10, Check30, Read5, Read10, Read30, Revuew5, Revuew10, Revuew30 } from '../../assets'
+import { Empty, Check5, Check10, Check30, Read5, Read10, Read30, Revuew5, Revuew10, Revuew30 } from '../../assets'
 import { readUserApi } from '../../apis/users/users'
 import { readUserReviewsApi } from '../../apis/reviews/reviews'
 import { readUserCollectionApi } from '../../apis/collections/collections'
@@ -258,7 +258,7 @@ export const UserProfilePage = () => {
                     onClick={() => handleCollectionClick(collection.collectionId)}
                   >
                     <div className={styles.collectionCover}>
-                      <img src={Bird} alt={collection.collectionName} />
+                      <img src={Empty} alt={collection.collectionName} />
                     </div>
                     <div className={styles.collectionInfo}>
                       <h3 className={styles.collectionName}>{collection.collectionName}</h3>

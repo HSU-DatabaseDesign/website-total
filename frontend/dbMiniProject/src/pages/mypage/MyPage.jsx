@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './MyPage.module.scss'
 import { Header } from '../../components/Header'
-import { Bird, Check5, Check10, Check30, Read5, Read10, Read30, Revuew5, Revuew10, Revuew30 } from '../../assets'
+import { Empty, Check5, Check10, Check30, Read5, Read10, Read30, Revuew5, Revuew10, Revuew30 } from '../../assets'
 import { readUserApi, updateUserApi, deleteUserApi } from '../../apis/users/users'
 import { readUserCollectionApi, createCollectionApi, updateCollectionApi, deleteCollectionApi, readSavedCollectionsApi, unsaveCollectionApi } from '../../apis/collections/collections'
 import { addFollowApi, deleteFollowApi, readFollowingApi, readFollowersApi } from '../../apis/follow/follow'
@@ -34,7 +34,7 @@ export const MyPage = () => {
       id: collection.collectionId,
       name: collection.collectionName,
       count: collection.novelCount || 0,
-      coverImages: [Bird], // 기본 이미지
+      coverImages: [Empty], // 기본 이미지
       description: collection.content || ''
     }))
   }
@@ -143,7 +143,7 @@ export const MyPage = () => {
         const transformedReviews = reviewsResult.data.map(review => ({
           id: review.reviewId,
           bookTitle: review.novelName,
-          bookImg: Bird,
+          bookImg: Empty,
           rating: review.star,
           content: review.content,
           date: '최근',
@@ -160,7 +160,7 @@ export const MyPage = () => {
           name: c.collectionName,
           count: c.novelCount || 0,
           saveCount: c.saveCount || 0,
-          coverImages: [Bird],
+          coverImages: [Empty],
           description: c.content || '',
           owner: c.userName,
           userId: c.userId
@@ -374,7 +374,7 @@ export const MyPage = () => {
           name: c.collectionName,
           count: c.novelCount || 0,
           saveCount: c.saveCount || 0,
-          coverImages: [Bird],
+          coverImages: [Empty],
           description: c.content || '',
           owner: c.userName,
           userId: c.userId
@@ -514,7 +514,7 @@ export const MyPage = () => {
               ) : (
                 myReviews.map((review) => (
                   <div key={review.id} className={styles.reviewCard}>
-                    <img src={review.bookImg || Bird} alt={review.bookTitle} className={styles.bookCover} />
+                    <img src={review.bookImg || Empty} alt={review.bookTitle} className={styles.bookCover} />
                     <div className={styles.reviewContent}>
                       <h3 className={styles.bookTitle}>{review.bookTitle}</h3>
                       <div className={styles.reviewRating}>

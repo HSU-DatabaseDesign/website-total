@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import styles from './DetailNovel.module.scss'
 import { Header } from '../../components/Header'
-import { Bird, Novel1, Novel2, Novel3, Novel4, Novel5, Novel6, Novel7, Novel8, Novel9, Novel10, Novel11, Novel12, Novel13, Novel14, Novel15, Novel16, Novel17, Novel18, Novel19, Novel20 } from '../../assets'
+import { Novel1, Novel2, Novel3, Novel4, Novel5, Novel6, Novel7, Novel8, Novel9, Novel10, Novel11, Novel12, Novel13, Novel14, Novel15, Novel16, Novel17, Novel18, Novel19, Novel20, Empty } from '../../assets'
 import { readDetailNovelApi } from '../../apis/novels/novel'
 import { readNovelReveiwApi, createReviewApi, updateReviewApi, deleteReviewApi, addLikeApi, deleteLikeApi } from '../../apis/reviews/reviews'
 import { addNovelCollectionApi, readUserCollectionApi, createCollectionApi } from '../../apis/collections/collections'
@@ -36,7 +36,7 @@ export const DetailNovel = () => {
   // 임시 데이터 (API 실패 시 사용)
   const defaultNovelData = {
     id: 1,
-    img: Bird,
+    img: Empty,
     genre: "판타지",
     title: "눈물을 마시는 새",
     author: "이영도",
@@ -90,7 +90,7 @@ export const DetailNovel = () => {
       11: Novel11, 12: Novel12, 13: Novel13, 14: Novel14, 15: Novel15,
       16: Novel16, 17: Novel17, 18: Novel18, 19: Novel19, 20: Novel20,
     };
-    return novelImages[novelId] || Bird;
+    return novelImages[novelId] || Empty;
   };
   
   // 백엔드 데이터를 프론트엔드 형식으로 변환

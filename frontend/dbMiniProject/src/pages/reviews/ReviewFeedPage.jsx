@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './ReviewFeedPage.module.scss'
 import { Header } from '../../components/Header'
-import { Bird } from '../../assets'
+import { Empty } from '../../assets'
 import { readNovelApi } from '../../apis/novels/novel'
 import { readNovelReveiwApi, addLikeApi } from '../../apis/reviews/reviews'
 
@@ -32,7 +32,7 @@ export const ReviewFeedPage = () => {
           // 리뷰에 소설 정보 추가
           const reviewsWithNovel = reviewsResult.data.map(review => ({
             ...review,
-            novelImg: Bird,
+            novelImg: Empty,
             novelGenre: novel.genre
           }))
           allReviews.push(...reviewsWithNovel)
@@ -142,7 +142,7 @@ export const ReviewFeedPage = () => {
             {reviews.map((review) => (
               <div key={review.reviewId} className={styles.reviewCard}>
                 <div className={styles.novelInfo} onClick={() => handleNovelClick(review.novelId)}>
-                  <img src={review.novelImg || Bird} alt={review.novelName} className={styles.novelCover} />
+                  <img src={review.novelImg || Empty} alt={review.novelName} className={styles.novelCover} />
                   <div className={styles.novelDetails}>
                     <h3 className={styles.novelTitle}>{review.novelName}</h3>
                     <span className={styles.novelGenre}>{review.novelGenre}</span>
