@@ -2,7 +2,18 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './ReviewFeedPage.module.scss'
 import { Header } from '../../components/Header'
-import { Empty } from '../../assets'
+import { Novel1, Novel2, Novel3, Novel4, Novel5, Novel6, Novel7, Novel8, Novel9, Novel10, Novel11, Novel12, Novel13, Novel14, Novel15, Novel16, Novel17, Novel18, Novel19, Novel20, Empty } from '../../assets'
+
+// 소설 ID에 맞는 이미지 가져오기
+const getNovelImage = (novelId) => {
+  const novelImages = {
+    1: Novel1, 2: Novel2, 3: Novel3, 4: Novel4, 5: Novel5,
+    6: Novel6, 7: Novel7, 8: Novel8, 9: Novel9, 10: Novel10,
+    11: Novel11, 12: Novel12, 13: Novel13, 14: Novel14, 15: Novel15,
+    16: Novel16, 17: Novel17, 18: Novel18, 19: Novel19, 20: Novel20,
+  };
+  return novelImages[novelId] || Empty;
+};
 import { readNovelApi } from '../../apis/novels/novel'
 import { readNovelReveiwApi, addLikeApi } from '../../apis/reviews/reviews'
 
@@ -32,7 +43,7 @@ export const ReviewFeedPage = () => {
           // 리뷰에 소설 정보 추가
           const reviewsWithNovel = reviewsResult.data.map(review => ({
             ...review,
-            novelImg: Empty,
+            novelImg: getNovelImage(novel.novelId),
             novelGenre: novel.genre
           }))
           allReviews.push(...reviewsWithNovel)

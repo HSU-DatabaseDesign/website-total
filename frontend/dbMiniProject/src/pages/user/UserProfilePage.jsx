@@ -2,13 +2,24 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import styles from './UserProfilePage.module.scss'
 import { Header } from '../../components/Header'
-import { Empty, Check5, Check10, Check30, Read5, Read10, Read30, Revuew5, Revuew10, Revuew30 } from '../../assets'
+import { Novel1, Novel2, Novel3, Novel4, Novel5, Novel6, Novel7, Novel8, Novel9, Novel10, Novel11, Novel12, Novel13, Novel14, Novel15, Novel16, Novel17, Novel18, Novel19, Novel20, Empty, Check5, Check10, Check30, Read5, Read10, Read30, Revuew5, Revuew10, Revuew30 } from '../../assets'
 import { readUserApi } from '../../apis/users/users'
 import { readUserReviewsApi } from '../../apis/reviews/reviews'
-import { readUserCollectionApi } from '../../apis/collections/collections'
+import { readUserCollectionApi, readCollectionDetailApi } from '../../apis/collections/collections'
 import { addFollowApi, deleteFollowApi, readFollowingApi, readFollowersApi } from '../../apis/follow/follow'
 import { readAuthorApi } from '../../apis/authors/authors'
 import { readUserBadgesApi } from '../../apis/badges/badges'
+
+// 소설 ID에 맞는 이미지 가져오기 (컴포넌트 외부에 정의)
+const getNovelImage = (novelId) => {
+  const novelImages = {
+    1: Novel1, 2: Novel2, 3: Novel3, 4: Novel4, 5: Novel5,
+    6: Novel6, 7: Novel7, 8: Novel8, 9: Novel9, 10: Novel10,
+    11: Novel11, 12: Novel12, 13: Novel13, 14: Novel14, 15: Novel15,
+    16: Novel16, 17: Novel17, 18: Novel18, 19: Novel19, 20: Novel20,
+  };
+  return novelImages[novelId] || Empty;
+};
 
 export const UserProfilePage = () => {
   const { userId } = useParams()
@@ -26,7 +37,7 @@ export const UserProfilePage = () => {
   const [isOwnProfile, setIsOwnProfile] = useState(false)
   const [userBadges, setUserBadges] = useState([])
 
-  const tabs = ['리뷰', '컬렉션', '배지']
+  const tabs = isAuthor ? ['작품', '리뷰', '컬렉션', '배지'] : ['리뷰', '컬렉션', '배지']
   
   // 배지 타입별 이미지 매핑 (배지 페이지와 동일)
   // 출석, 팔로워 -> check / 리뷰 -> review / 컬렉션 -> read
@@ -71,7 +82,27 @@ export const UserProfilePage = () => {
       // 유저의 컬렉션 조회
       const collectionsResult = await readUserCollectionApi(userId)
       if (collectionsResult.ok && collectionsResult.data) {
-        setCollections(collectionsResult.data)
+        // 각 컬렉션의 커버 이미지 설정
+        const collectionsWithImages = await Promise.all(
+          collectionsResult.data.map(async (collection) => {
+            let coverImage = Empty
+            
+            // 컬렉션에 소설이 있으면 첫 번째 소설 이미지 가져오기
+            if (collection.novelCount > 0) {
+              const detailResult = await readCollectionDetailApi(collection.collectionId, currentUserId)
+              if (detailResult.ok && detailResult.data && detailResult.data.novels && detailResult.data.novels.length > 0) {
+                const firstNovelId = detailResult.data.novels[0].novelId
+                coverImage = getNovelImage(firstNovelId)
+              }
+            }
+            
+            return {
+              ...collection,
+              coverImage
+            }
+          })
+        )
+        setCollections(collectionsWithImages)
       }
 
       // 팔로잉/팔로워 조회
@@ -219,8 +250,36 @@ export const UserProfilePage = () => {
 
         {/* 컨텐츠 영역 */}
         <div className={styles.contentSection}>
+          {/* 작품 탭 (작가인 경우에만) */}
+          {isAuthor && selectedTab === 0 && (
+            <div className={styles.novelGrid}>
+              {!authorInfo?.novels || authorInfo.novels.length === 0 ? (
+                <div className={styles.emptyMessage}>작성한 작품이 없습니다.</div>
+              ) : (
+                authorInfo.novels.map((novel) => (
+                  <div 
+                    key={novel.novelId} 
+                    className={styles.novelCard}
+                    onClick={() => handleNovelClick(novel.novelId)}
+                  >
+                    <div className={styles.novelCover}>
+                      <img src={getNovelImage(novel.novelId)} alt={novel.novelName} />
+                    </div>
+                    <div className={styles.novelInfo}>
+                      <h3 className={styles.novelTitle}>{novel.novelName}</h3>
+                      <p className={styles.novelGenre}>{novel.genre}</p>
+                      <span className={styles.novelStatus}>
+                        {novel.novelStatus === 'COMPLETED' ? '완결' : '연재중'}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
           {/* 리뷰 탭 */}
-          {selectedTab === 0 && (
+          {selectedTab === (isAuthor ? 1 : 0) && (
             <div className={styles.reviewList}>
               {reviews.length === 0 ? (
                 <div className={styles.emptyMessage}>작성한 리뷰가 없습니다.</div>
@@ -231,13 +290,18 @@ export const UserProfilePage = () => {
                     className={styles.reviewCard}
                     onClick={() => handleNovelClick(review.novelId)}
                   >
-                    <div className={styles.reviewHeader}>
-                      <h4 className={styles.novelName}>{review.novelName}</h4>
-                      <span className={styles.reviewRating}>⭐ {review.star}</span>
+                    <div className={styles.reviewNovelImage}>
+                      <img src={getNovelImage(review.novelId)} alt={review.novelName} />
                     </div>
-                    <p className={styles.reviewContent}>{review.content}</p>
-                    <div className={styles.reviewFooter}>
-                      <span className={styles.likeCount}>👍 {review.likeCount || 0}</span>
+                    <div className={styles.reviewDetails}>
+                      <div className={styles.reviewHeader}>
+                        <h4 className={styles.novelName}>{review.novelName}</h4>
+                        <span className={styles.reviewRating}>⭐ {review.star}</span>
+                      </div>
+                      <p className={styles.reviewContent}>{review.content}</p>
+                      <div className={styles.reviewFooter}>
+                        <span className={styles.likeCount}>👍 {review.likeCount || 0}</span>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -246,7 +310,7 @@ export const UserProfilePage = () => {
           )}
 
           {/* 컬렉션 탭 */}
-          {selectedTab === 1 && (
+          {selectedTab === (isAuthor ? 2 : 1) && (
             <div className={styles.collectionGrid}>
               {collections.length === 0 ? (
                 <div className={styles.emptyMessage}>생성한 컬렉션이 없습니다.</div>
@@ -258,7 +322,7 @@ export const UserProfilePage = () => {
                     onClick={() => handleCollectionClick(collection.collectionId)}
                   >
                     <div className={styles.collectionCover}>
-                      <img src={Empty} alt={collection.collectionName} />
+                      <img src={collection.coverImage || Empty} alt={collection.collectionName} />
                     </div>
                     <div className={styles.collectionInfo}>
                       <h3 className={styles.collectionName}>{collection.collectionName}</h3>
@@ -271,7 +335,7 @@ export const UserProfilePage = () => {
           )}
 
           {/* 배지 탭 */}
-          {selectedTab === 2 && (
+          {selectedTab === (isAuthor ? 3 : 2) && (
             <div className={styles.badgeGrid}>
               {userBadges.length === 0 ? (
                 <div className={styles.emptyMessage}>획득한 배지가 없습니다.</div>

@@ -229,6 +229,8 @@
 }
 
 .reviewCard {
+  display: flex;
+  gap: 1.5rem;
   padding: 1.5rem;
   background-color: #f8f9fa;
   border-radius: 12px;
@@ -239,36 +241,58 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  .reviewHeader {
+  .reviewNovelImage {
+    width: 100px;
+    height: 140px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .reviewDetails {
+    flex: 1;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+    flex-direction: column;
 
-    .novelName {
-      font-size: $font-size-body;
-      font-weight: $font-weight-bold;
-      color: #333;
-      margin: 0;
+    .reviewHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      .novelName {
+        font-size: $font-size-body;
+        font-weight: $font-weight-bold;
+        color: #333;
+        margin: 0;
+      }
+
+      .reviewRating {
+        font-size: $font-size-body;
+        color: #ffd700;
+      }
     }
 
-    .reviewRating {
+    .reviewContent {
       font-size: $font-size-body;
-      color: #ffd700;
+      color: #666;
+      line-height: 1.6;
+      margin: 0 0 1rem 0;
+      flex: 1;
     }
-  }
 
-  .reviewContent {
-    font-size: $font-size-body;
-    color: #666;
-    line-height: 1.6;
-    margin: 0 0 1rem 0;
-  }
-
-  .reviewFooter {
-    .likeCount {
-      font-size: $font-size-subhead;
-      color: #999;
+    .reviewFooter {
+      .likeCount {
+        font-size: $font-size-subhead;
+        color: #999;
+      }
     }
   }
 }

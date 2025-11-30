@@ -2,9 +2,20 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './MyPage.module.scss'
 import { Header } from '../../components/Header'
-import { Empty, Check5, Check10, Check30, Read5, Read10, Read30, Revuew5, Revuew10, Revuew30 } from '../../assets'
+import { Novel1, Novel2, Novel3, Novel4, Novel5, Novel6, Novel7, Novel8, Novel9, Novel10, Novel11, Novel12, Novel13, Novel14, Novel15, Novel16, Novel17, Novel18, Novel19, Novel20, Empty, Check5, Check10, Check30, Read5, Read10, Read30, Revuew5, Revuew10, Revuew30 } from '../../assets'
+
+// 소설 ID에 맞는 이미지 가져오기
+const getNovelImage = (novelId) => {
+  const novelImages = {
+    1: Novel1, 2: Novel2, 3: Novel3, 4: Novel4, 5: Novel5,
+    6: Novel6, 7: Novel7, 8: Novel8, 9: Novel9, 10: Novel10,
+    11: Novel11, 12: Novel12, 13: Novel13, 14: Novel14, 15: Novel15,
+    16: Novel16, 17: Novel17, 18: Novel18, 19: Novel19, 20: Novel20,
+  };
+  return novelImages[novelId] || Empty;
+};
 import { readUserApi, updateUserApi, deleteUserApi } from '../../apis/users/users'
-import { readUserCollectionApi, createCollectionApi, updateCollectionApi, deleteCollectionApi, readSavedCollectionsApi, unsaveCollectionApi } from '../../apis/collections/collections'
+import { readUserCollectionApi, createCollectionApi, updateCollectionApi, deleteCollectionApi, readSavedCollectionsApi, unsaveCollectionApi, readCollectionDetailApi } from '../../apis/collections/collections'
 import { addFollowApi, deleteFollowApi, readFollowingApi, readFollowersApi } from '../../apis/follow/follow'
 import { readUserBadgesApi } from '../../apis/badges/badges'
 import { readUserReviewsApi } from '../../apis/reviews/reviews'
@@ -28,15 +39,29 @@ export const MyPage = () => {
   const [followTab, setFollowTab] = useState('following') // 'following' or 'followers'
   const [savedCollections, setSavedCollections] = useState([])
   
-  // 백엔드 컬렉션 데이터를 프론트엔드 형식으로 변환
-  const transformCollectionData = (collections) => {
-    return collections.map(collection => ({
-      id: collection.collectionId,
-      name: collection.collectionName,
-      count: collection.novelCount || 0,
-      coverImages: [Empty], // 기본 이미지
-      description: collection.content || ''
-    }))
+  // 백엔드 컬렉션 데이터를 프론트엔드 형식으로 변환 (이미지 포함)
+  const transformCollectionData = async (collections, userId) => {
+    const collectionsWithImages = await Promise.all(
+      collections.map(async (collection) => {
+        let coverImages = [Empty]
+        
+        if (collection.novelCount > 0) {
+          const detailResult = await readCollectionDetailApi(collection.collectionId, userId)
+          if (detailResult.ok && detailResult.data && detailResult.data.novels && detailResult.data.novels.length > 0) {
+            coverImages = [getNovelImage(detailResult.data.novels[0].novelId)]
+          }
+        }
+        
+        return {
+          id: collection.collectionId,
+          name: collection.collectionName,
+          count: collection.novelCount || 0,
+          coverImages: coverImages,
+          description: collection.content || ''
+        }
+      })
+    )
+    return collectionsWithImages
   }
   
   // 임시 기본 데이터 (API 실패 시 사용)
@@ -111,7 +136,7 @@ export const MyPage = () => {
       // 사용자의 컬렉션 조회
       const collectionResult = await readUserCollectionApi(userId)
       if (collectionResult.ok && collectionResult.data) {
-        const transformedCollections = transformCollectionData(collectionResult.data)
+        const transformedCollections = await transformCollectionData(collectionResult.data, userId)
         setMyCollections(transformedCollections)
       } else {
         setMyCollections([])
@@ -142,8 +167,9 @@ export const MyPage = () => {
       if (reviewsResult.ok && reviewsResult.data) {
         const transformedReviews = reviewsResult.data.map(review => ({
           id: review.reviewId,
+          novelId: review.novelId,
           bookTitle: review.novelName,
-          bookImg: Empty,
+          bookImg: getNovelImage(review.novelId),
           rating: review.star,
           content: review.content,
           date: '최근',
@@ -155,16 +181,27 @@ export const MyPage = () => {
       // 저장한 컬렉션 조회
       const savedResult = await readSavedCollectionsApi(userId)
       if (savedResult.ok && savedResult.data) {
-        const transformedSaved = savedResult.data.map(c => ({
-          id: c.collectionId,
-          name: c.collectionName,
-          count: c.novelCount || 0,
-          saveCount: c.saveCount || 0,
-          coverImages: [Empty],
-          description: c.content || '',
-          owner: c.userName,
-          userId: c.userId
-        }))
+        const transformedSaved = await Promise.all(
+          savedResult.data.map(async (c) => {
+            let coverImages = [Empty]
+            if (c.novelCount > 0) {
+              const detailResult = await readCollectionDetailApi(c.collectionId, userId)
+              if (detailResult.ok && detailResult.data && detailResult.data.novels && detailResult.data.novels.length > 0) {
+                coverImages = [getNovelImage(detailResult.data.novels[0].novelId)]
+              }
+            }
+            return {
+              id: c.collectionId,
+              name: c.collectionName,
+              count: c.novelCount || 0,
+              saveCount: c.saveCount || 0,
+              coverImages: coverImages,
+              description: c.content || '',
+              owner: c.userName,
+              userId: c.userId
+            }
+          })
+        )
         setSavedCollections(transformedSaved)
       }
       
@@ -294,7 +331,7 @@ export const MyPage = () => {
       // 컬렉션 목록 새로고침
       const collectionResult = await readUserCollectionApi(userId)
       if (collectionResult.ok && collectionResult.data) {
-        const transformedCollections = transformCollectionData(collectionResult.data)
+        const transformedCollections = await transformCollectionData(collectionResult.data, userId)
         setMyCollections(transformedCollections)
       }
     } else {
@@ -320,7 +357,7 @@ export const MyPage = () => {
       const userId = localStorage.getItem('userId') || 1
       const collectionResult = await readUserCollectionApi(userId)
       if (collectionResult.ok && collectionResult.data) {
-        const transformedCollections = transformCollectionData(collectionResult.data)
+        const transformedCollections = await transformCollectionData(collectionResult.data, userId)
         setMyCollections(transformedCollections)
       }
     } else {
@@ -339,7 +376,7 @@ export const MyPage = () => {
       const userId = localStorage.getItem('userId') || 1
       const collectionResult = await readUserCollectionApi(userId)
       if (collectionResult.ok && collectionResult.data) {
-        const transformedCollections = transformCollectionData(collectionResult.data)
+        const transformedCollections = await transformCollectionData(collectionResult.data, userId)
         setMyCollections(transformedCollections)
       }
     } else {
@@ -369,16 +406,27 @@ export const MyPage = () => {
       // 저장한 컬렉션 목록 새로고침
       const savedResult = await readSavedCollectionsApi(userId)
       if (savedResult.ok && savedResult.data) {
-        const transformedSaved = savedResult.data.map(c => ({
-          id: c.collectionId,
-          name: c.collectionName,
-          count: c.novelCount || 0,
-          saveCount: c.saveCount || 0,
-          coverImages: [Empty],
-          description: c.content || '',
-          owner: c.userName,
-          userId: c.userId
-        }))
+        const transformedSaved = await Promise.all(
+          savedResult.data.map(async (c) => {
+            let coverImages = [Empty]
+            if (c.novelCount > 0) {
+              const detailResult = await readCollectionDetailApi(c.collectionId, userId)
+              if (detailResult.ok && detailResult.data && detailResult.data.novels && detailResult.data.novels.length > 0) {
+                coverImages = [getNovelImage(detailResult.data.novels[0].novelId)]
+              }
+            }
+            return {
+              id: c.collectionId,
+              name: c.collectionName,
+              count: c.novelCount || 0,
+              saveCount: c.saveCount || 0,
+              coverImages: coverImages,
+              description: c.content || '',
+              owner: c.userName,
+              userId: c.userId
+            }
+          })
+        )
         setSavedCollections(transformedSaved)
       }
     } else {

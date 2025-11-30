@@ -30,8 +30,8 @@ import Novel17 from '@/assets/novel_17.png';
 import Novel18 from '@/assets/novel_18.png';
 import Novel19 from '@/assets/novel_19.png';
 import Novel20 from '@/assets/novel_20.png';
-// Empty 이미지 임시로 novel_1 사용 (empty.png 문제 시)
-import Empty from '@/assets/novel_1.png';
+// Empty 이미지
+import Empty from '@/assets/empty.png';
 
 export {
   MainIcon,

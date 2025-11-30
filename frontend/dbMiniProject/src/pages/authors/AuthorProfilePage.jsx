@@ -2,10 +2,21 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import styles from './AuthorProfilePage.module.scss'
 import { Header } from '../../components/Header'
-import { Empty } from '../../assets'
+import { Novel1, Novel2, Novel3, Novel4, Novel5, Novel6, Novel7, Novel8, Novel9, Novel10, Novel11, Novel12, Novel13, Novel14, Novel15, Novel16, Novel17, Novel18, Novel19, Novel20, Empty } from '../../assets'
+
+// 소설 ID에 맞는 이미지 가져오기
+const getNovelImage = (novelId) => {
+  const novelImages = {
+    1: Novel1, 2: Novel2, 3: Novel3, 4: Novel4, 5: Novel5,
+    6: Novel6, 7: Novel7, 8: Novel8, 9: Novel9, 10: Novel10,
+    11: Novel11, 12: Novel12, 13: Novel13, 14: Novel14, 15: Novel15,
+    16: Novel16, 17: Novel17, 18: Novel18, 19: Novel19, 20: Novel20,
+  };
+  return novelImages[novelId] || Empty;
+};
 import { readAuthorApi } from '../../apis/authors/authors'
 import { readUserReviewsApi } from '../../apis/reviews/reviews'
-import { readUserCollectionApi } from '../../apis/collections/collections'
+import { readUserCollectionApi, readCollectionDetailApi } from '../../apis/collections/collections'
 import { readNovelApi } from '../../apis/novels/novel'
 
 export const AuthorProfilePage = () => {
@@ -59,7 +70,20 @@ export const AuthorProfilePage = () => {
       // 작가의 컬렉션 조회
       const collectionsResult = await readUserCollectionApi(userId)
       if (collectionsResult.ok && collectionsResult.data) {
-        setCollections(collectionsResult.data)
+        // 각 컬렉션의 커버 이미지 설정
+        const collectionsWithImages = await Promise.all(
+          collectionsResult.data.map(async (collection) => {
+            let coverImage = Empty
+            if (collection.novelCount > 0) {
+              const detailResult = await readCollectionDetailApi(collection.collectionId, userId)
+              if (detailResult.ok && detailResult.data && detailResult.data.novels && detailResult.data.novels.length > 0) {
+                coverImage = getNovelImage(detailResult.data.novels[0].novelId)
+              }
+            }
+            return { ...collection, coverImage }
+          })
+        )
+        setCollections(collectionsWithImages)
       }
 
       setLoading(false)
@@ -150,7 +174,7 @@ export const AuthorProfilePage = () => {
                     className={styles.novelCard}
                     onClick={() => handleNovelClick(novel.novelId)}
                   >
-                    <img src={Empty} alt={novel.novelName} className={styles.novelCover} />
+                    <img src={getNovelImage(novel.novelId)} alt={novel.novelName} className={styles.novelCover} />
                     <div className={styles.novelInfo}>
                       <h3 className={styles.novelTitle}>{novel.novelName}</h3>
                       <span className={styles.novelGenre}>{novel.genre}</span>
@@ -176,13 +200,18 @@ export const AuthorProfilePage = () => {
                     className={styles.reviewCard}
                     onClick={() => handleNovelClick(review.novelId)}
                   >
-                    <div className={styles.reviewHeader}>
-                      <h4 className={styles.novelName}>{review.novelName}</h4>
-                      <span className={styles.reviewRating}>⭐ {review.star}</span>
+                    <div className={styles.reviewNovelImage}>
+                      <img src={getNovelImage(review.novelId)} alt={review.novelName} />
                     </div>
-                    <p className={styles.reviewContent}>{review.content}</p>
-                    <div className={styles.reviewFooter}>
-                      <span className={styles.likeCount}>👍 {review.likeCount || 0}</span>
+                    <div className={styles.reviewDetails}>
+                      <div className={styles.reviewHeader}>
+                        <h4 className={styles.novelName}>{review.novelName}</h4>
+                        <span className={styles.reviewRating}>⭐ {review.star}</span>
+                      </div>
+                      <p className={styles.reviewContent}>{review.content}</p>
+                      <div className={styles.reviewFooter}>
+                        <span className={styles.likeCount}>👍 {review.likeCount || 0}</span>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -203,7 +232,7 @@ export const AuthorProfilePage = () => {
                     onClick={() => handleCollectionClick(collection.collectionId)}
                   >
                     <div className={styles.collectionCover}>
-                      <img src={Empty} alt={collection.collectionName} />
+                      <img src={collection.coverImage || Empty} alt={collection.collectionName} />
                     </div>
                     <div className={styles.collectionInfo}>
                       <h3 className={styles.collectionName}>{collection.collectionName}</h3>

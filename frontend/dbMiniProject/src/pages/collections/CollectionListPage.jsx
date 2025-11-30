@@ -32,22 +32,33 @@ export const CollectionListPage = () => {
       // 각 컬렉션의 상세 정보를 가져와서 소설 이미지 설정
       const transformedPromises = result.data.map(async (c) => {
         let coverImages = [Empty] // 기본값: 빈 이미지
+        let isGrid = false // 그리드 형식 여부
         
-        // 소설이 있는 경우 상세 정보 조회
+        // 소설이 있는 경우에만 상세 정보 조회
         if (c.novelCount > 0) {
           const detailResult = await readCollectionDetailApi(c.collectionId, currentUserId)
-          if (detailResult.ok && detailResult.data && detailResult.data.novels) {
+          if (detailResult.ok && detailResult.data && detailResult.data.novels && detailResult.data.novels.length > 0) {
             const novels = detailResult.data.novels
             const novelIds = novels.map(n => n.novelId)
             
             if (novelIds.length >= 4) {
-              // 4권 이상: 처음 4개 이미지 표시
+              // 4권 이상: 처음 4개 이미지를 그리드로 표시
               coverImages = novelIds.slice(0, 4).map(id => getNovelImage(id))
-            } else if (novelIds.length > 0) {
-              // 3권 이하: 첫 번째 이미지만 표시
+              isGrid = true
+            } else {
+              // 1~3권: 첫 번째 이미지만 크게 표시
               coverImages = [getNovelImage(novelIds[0])]
+              isGrid = false
             }
+          } else {
+            // API 호출 실패 또는 소설 데이터 없음 -> Empty 유지
+            coverImages = [Empty]
+            isGrid = false
           }
+        } else {
+          // novelCount가 0이면 Empty 이미지 표시
+          coverImages = [Empty]
+          isGrid = false
         }
         
         return {
@@ -60,6 +71,7 @@ export const CollectionListPage = () => {
           saveCount: c.saveCount || 0,
           isSaved: c.isSaved || false,
           coverImages: coverImages,
+          isGrid: isGrid,
           createdAt: c.createdAt || new Date().toISOString()
         }
       })
@@ -184,8 +196,8 @@ export const CollectionListPage = () => {
                   className={styles.collectionCard}
                   onClick={() => handleCollectionClick(collection.id)}
                 >
-                  <div className={styles.collectionCovers}>
-                    {collection.coverImages.slice(0, 4).map((img, idx) => (
+                  <div className={`${styles.collectionCovers} ${collection.isGrid ? styles.grid : styles.single}`}>
+                    {collection.coverImages.map((img, idx) => (
                       <img key={idx} src={img} alt={`cover ${idx}`} className={styles.coverImage} />
                     ))}
                   </div>

@@ -92,11 +92,21 @@
 }
 
 .collectionCovers {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 120px);
-  gap: 2px;
   background-color: #e0e0e0;
+  
+  // 그리드 형식 (4권 이상)
+  &.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 120px);
+    gap: 2px;
+  }
+  
+  // 단일 이미지 형식 (3권 이하 또는 비어있음)
+  &.single {
+    display: flex;
+    height: 240px;
+  }
   
   .coverImage {
     width: 100%;
