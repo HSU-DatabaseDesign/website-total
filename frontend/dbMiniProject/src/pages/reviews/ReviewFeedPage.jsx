@@ -15,44 +15,48 @@ const getNovelImage = (novelId) => {
   return novelImages[novelId] || Empty;
 };
 import { readNovelApi } from '../../apis/novels/novel'
-import { readNovelReveiwApi, addLikeApi } from '../../apis/reviews/reviews'
+import { readAllReviewsApi, addLikeApi } from '../../apis/reviews/reviews'
 
 export const ReviewFeedPage = () => {
   const navigate = useNavigate()
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
-  const [sortBy, setSortBy] = useState('latest') // latest, likes, rating
+  const [sortBy, setSortBy] = useState('likes') // likes, ratingHigh, ratingLow
 
-  // 모든 소설의 리뷰를 가져와서 합치기
+  // 전체 리뷰 가져오기
   useEffect(() => {
     const fetchAllReviews = async () => {
       setLoading(true)
       
-      // 먼저 모든 소설 목록 가져오기
-      const novelsResult = await readNovelApi()
-      if (!novelsResult.ok || !novelsResult.data) {
-        setLoading(false)
-        return
-      }
-
-      // 각 소설의 리뷰 가져오기
-      const allReviews = []
-      for (const novel of novelsResult.data) {
-        const reviewsResult = await readNovelReveiwApi(novel.novelId)
-        if (reviewsResult.ok && reviewsResult.data) {
-          // 리뷰에 소설 정보 추가
-          const reviewsWithNovel = reviewsResult.data.map(review => ({
-            ...review,
-            novelImg: getNovelImage(novel.novelId),
-            novelGenre: novel.genre
-          }))
-          allReviews.push(...reviewsWithNovel)
+      // 전체 리뷰 목록 가져오기
+      const reviewsResult = await readAllReviewsApi()
+      if (reviewsResult.ok && reviewsResult.data) {
+        // 모든 소설 목록 가져와서 리뷰에 소설 정보 매핑
+        const novelsResult = await readNovelApi()
+        const novelsMap = {}
+        if (novelsResult.ok && novelsResult.data) {
+          novelsResult.data.forEach(novel => {
+            novelsMap[novel.novelId] = novel
+          })
         }
+        
+        // 리뷰에 소설 정보 추가
+        const reviewsWithNovel = reviewsResult.data.map(review => {
+          const novel = novelsMap[review.novelId]
+          return {
+            ...review,
+            novelImg: novel ? getNovelImage(novel.novelId) : Empty,
+            novelGenre: novel ? novel.genre : '알 수 없음'
+          }
+        })
+        
+        // 정렬 (기본: 공감순)
+        reviewsWithNovel.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
+        setReviews(reviewsWithNovel)
+      } else {
+        setReviews([])
       }
-
-      // 정렬 (기본: 최신순 - reviewId 역순)
-      allReviews.sort((a, b) => b.reviewId - a.reviewId)
-      setReviews(allReviews)
+      
       setLoading(false)
     }
 
@@ -66,14 +70,17 @@ export const ReviewFeedPage = () => {
     const sorted = [...reviews]
     
     switch(newSort) {
-      case 'latest':
-        sorted.sort((a, b) => b.reviewId - a.reviewId)
-        break
       case 'likes':
+        // 공감순 (좋아요 수 내림차순)
         sorted.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
         break
-      case 'rating':
+      case 'ratingHigh':
+        // 높은평점순 (평점 내림차순)
         sorted.sort((a, b) => (b.star || 0) - (a.star || 0))
+        break
+      case 'ratingLow':
+        // 낮은평점순 (평점 오름차순)
+        sorted.sort((a, b) => (a.star || 0) - (b.star || 0))
         break
       default:
         break
@@ -124,22 +131,22 @@ export const ReviewFeedPage = () => {
         {/* 정렬 옵션 */}
         <div className={styles.sortOptions}>
           <button 
-            className={`${styles.sortButton} ${sortBy === 'latest' ? styles.active : ''}`}
-            onClick={() => handleSortChange('latest')}
-          >
-            최신순
-          </button>
-          <button 
             className={`${styles.sortButton} ${sortBy === 'likes' ? styles.active : ''}`}
             onClick={() => handleSortChange('likes')}
           >
             공감순
           </button>
           <button 
-            className={`${styles.sortButton} ${sortBy === 'rating' ? styles.active : ''}`}
-            onClick={() => handleSortChange('rating')}
+            className={`${styles.sortButton} ${sortBy === 'ratingHigh' ? styles.active : ''}`}
+            onClick={() => handleSortChange('ratingHigh')}
           >
             높은평점순
+          </button>
+          <button 
+            className={`${styles.sortButton} ${sortBy === 'ratingLow' ? styles.active : ''}`}
+            onClick={() => handleSortChange('ratingLow')}
+          >
+            낮은평점순
           </button>
         </div>
 

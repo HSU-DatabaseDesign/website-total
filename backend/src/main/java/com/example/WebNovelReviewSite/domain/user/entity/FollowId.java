@@ -14,7 +14,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class FollowId implements Serializable {
 
-    @Column(name = "user_id")
+    @Column(name = "follower_id")
     private Long userId; // 팔로우 거는 사람
 
     @Column(name = "target_id")

@@ -8,10 +8,28 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "author_info")
 public class AuthorInfo {
+    
+    // @MapsId를 사용하기 위한 팩토리 메서드
+    // @MapsId는 user의 ID를 userId에 자동으로 매핑하지만, 
+    // 명시적으로 userId를 설정하는 것이 더 안전합니다.
+    public static AuthorInfo create(User user, String penName, String nationality, 
+                                    String debutYear, String brief, String profileImage, Boolean isConfirmed) {
+        if (user == null || user.getUserId() == null) {
+            throw new IllegalArgumentException("User와 User ID는 필수입니다.");
+        }
+        AuthorInfo authorInfo = new AuthorInfo();
+        authorInfo.setUserId(user.getUserId()); // 명시적으로 userId 설정
+        authorInfo.setUser(user);
+        authorInfo.setPenName(penName);
+        authorInfo.setNationality(nationality);
+        authorInfo.setDebutYear(debutYear);
+        authorInfo.setBrief(brief);
+        authorInfo.setProfileImage(profileImage);
+        authorInfo.setIsConfirmed(isConfirmed);
+        return authorInfo;
+    }
 
     @Id
     @Column(name = "user_id")

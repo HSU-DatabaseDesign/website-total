@@ -97,6 +97,36 @@
     }
   }
 
+  .followButton {
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    font-size: $font-size-body;
+    font-weight: $font-weight-bold;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+    margin-left: auto;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+    }
+
+    &.following {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.7);
+
+      &:hover {
+        background: rgba(244, 67, 54, 0.8);
+        border-color: rgba(244, 67, 54, 1);
+      }
+    }
+  }
+
   .profileStats {
     display: flex;
     gap: 1.5rem;

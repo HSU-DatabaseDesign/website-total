@@ -90,14 +90,31 @@ CREATE TABLE review (
     FOREIGN KEY (novel_id) REFERENCES novel(novel_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 7. review_hashtag 테이블
-CREATE TABLE review_hashtag (
-    review_id BIGINT,
-    hashtag VARCHAR(255),
-    FOREIGN KEY (review_id) REFERENCES review(review_id) ON DELETE CASCADE
+-- 7. hashtag 테이블
+CREATE TABLE hashtag (
+    hashtag_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    hashtag_name VARCHAR(10) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 8. review_like 테이블 (리뷰 좋아요)
+-- 8. review_hashtag 테이블 (리뷰-해시태그 다대다 관계)
+CREATE TABLE review_hashtag (
+    review_id BIGINT,
+    hashtag_id BIGINT,
+    PRIMARY KEY (review_id, hashtag_id),
+    FOREIGN KEY (review_id) REFERENCES review(review_id) ON DELETE CASCADE,
+    FOREIGN KEY (hashtag_id) REFERENCES hashtag(hashtag_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 9. novel_hashtag 테이블 (소설-해시태그 다대다 관계)
+CREATE TABLE novel_hashtag (
+    novel_id BIGINT,
+    hashtag_id BIGINT,
+    PRIMARY KEY (novel_id, hashtag_id),
+    FOREIGN KEY (novel_id) REFERENCES novel(novel_id) ON DELETE CASCADE,
+    FOREIGN KEY (hashtag_id) REFERENCES hashtag(hashtag_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 10. review_like 테이블 (리뷰 좋아요)
 CREATE TABLE review_like (
     review_id BIGINT,
     user_id BIGINT,
@@ -106,7 +123,7 @@ CREATE TABLE review_like (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 9. follow 테이블
+-- 11. follow 테이블
 CREATE TABLE follow (
     follower_id BIGINT,
     target_id BIGINT,
@@ -115,7 +132,7 @@ CREATE TABLE follow (
     FOREIGN KEY (target_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 10. badge 테이블
+-- 12. badge 테이블
 CREATE TABLE badge (
     badge_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     badge_name VARCHAR(20),
@@ -127,7 +144,7 @@ CREATE TABLE badge (
     end_date DATETIME
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 11. user_badge 테이블 (사용자-배지 중간 테이블)
+-- 13. user_badge 테이블 (사용자-배지 중간 테이블)
 CREATE TABLE user_badge (
     user_id BIGINT,
     badge_id BIGINT,
@@ -136,7 +153,7 @@ CREATE TABLE user_badge (
     FOREIGN KEY (badge_id) REFERENCES badge(badge_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 12. login_history 테이블 (출석 기록)
+-- 14. login_history 테이블 (출석 기록)
 CREATE TABLE login_history (
     login_history_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
@@ -387,7 +404,14 @@ INSERT INTO review (user_id, novel_id, content, star, views) VALUES
 ((SELECT user_id FROM users WHERE id = 'admin1'), (SELECT novel_id FROM novel WHERE novel_name = '나 혼자만 레벨업'), '관리자 추천작입니다!', 5.0, 500);
 
 
--- 8. 배지 데이터 추가 (출석, 팔로워, 리뷰, 컬렉션 각 5, 10, 30)
+-- 8. 해시태그 데이터 추가
+INSERT INTO hashtag (hashtag_name) VALUES
+('판타지'), ('무협'), ('로맨스'), ('액션'), ('스릴러'),
+('게임'), ('회귀'), ('성장'), ('힐링'), ('복수'),
+('재벌'), ('의료'), ('일상'), ('SF'), ('드라마'),
+('명작'), ('추천'), ('베스트'), ('신작'), ('완결');
+
+-- 9. 배지 데이터 추가 (출석, 팔로워, 리뷰, 컬렉션 각 5, 10, 30)
 INSERT INTO badge (badge_name, badge_image, badge_type, badge_mission, condition_value, start_date, end_date) VALUES
 -- 출석 배지 (check 이미지)
 ('출석 입문', '✅', 'LOGIN_DAYS', '5일 출석', 5, NOW(), NULL),
@@ -406,7 +430,89 @@ INSERT INTO badge (badge_name, badge_image, badge_type, badge_mission, condition
 ('컬렉션 중급', '📖', 'COLLECTION_COUNT', '10개 컬렉션 생성', 10, NOW(), NULL),
 ('컬렉션 마스터', '🎯', 'COLLECTION_COUNT', '30개 컬렉션 생성', 30, NOW(), NULL);
 
--- 9. 리뷰 좋아요 추가
+-- 10. 리뷰 해시태그 연결 추가
+INSERT INTO review_hashtag (review_id, hashtag_id)
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%판타지 소설의 정석%' AND h.hashtag_name IN ('판타지', '명작', '추천')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%몰입감이 장난%' AND h.hashtag_name IN ('판타지', '추천', '베스트')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%성장물의 교과서%' AND h.hashtag_name IN ('성장', '액션', '추천')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%게임 소설의 원조%' AND h.hashtag_name IN ('게임', '판타지', '명작')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%무협 회귀물의 정석%' AND h.hashtag_name IN ('무협', '회귀', '추천')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%달달한 로맨스%' AND h.hashtag_name IN ('로맨스', '힐링', '추천')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%사이다 전개%' AND h.hashtag_name IN ('재벌', '로맨스', '복수')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%긴장감 넘치는%' AND h.hashtag_name IN ('스릴러', '액션', '추천')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%반전이 충격적%' AND h.hashtag_name IN ('스릴러', '드라마', '추천')
+UNION ALL
+SELECT r.review_id, h.hashtag_id FROM review r, hashtag h
+WHERE r.content LIKE '%의료 드라마%' AND h.hashtag_name IN ('의료', '드라마', '일상');
+
+-- 11. 소설 해시태그 연결 추가
+INSERT INTO novel_hashtag (novel_id, hashtag_id)
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '눈물을 마시는 새' AND h.hashtag_name IN ('판타지', '명작', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '전지적 독자 시점' AND h.hashtag_name IN ('판타지', '베스트', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '나 혼자만 레벨업' AND h.hashtag_name IN ('액션', '성장', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '달빛 조각사' AND h.hashtag_name IN ('게임', '판타지', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '화산귀환' AND h.hashtag_name IN ('무협', '회귀', '신작')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '로맨스는 별책부록' AND h.hashtag_name IN ('로맨스', '힐링', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '재벌집 막내아들' AND h.hashtag_name IN ('재벌', '로맨스', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '스릴러 게임' AND h.hashtag_name IN ('스릴러', '액션', '신작')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '의사 요한' AND h.hashtag_name IN ('의료', '드라마', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '김부장' AND h.hashtag_name IN ('일상', '드라마', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '나노마신' AND h.hashtag_name IN ('무협', 'SF', '신작')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '천마신교' AND h.hashtag_name IN ('무협', '액션', '신작')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '검신' AND h.hashtag_name IN ('무협', '명작', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '달콤한 복수' AND h.hashtag_name IN ('로맨스', '복수', '신작')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '살인자의 기억' AND h.hashtag_name IN ('스릴러', '드라마', '완결')
+UNION ALL
+SELECT n.novel_id, h.hashtag_id FROM novel n, hashtag h
+WHERE n.novel_name = '용의 후예' AND h.hashtag_name IN ('판타지', '성장', '신작');
+
+-- 12. 리뷰 좋아요 추가
 INSERT INTO review_like (review_id, user_id)
 SELECT r.review_id, u.user_id FROM review r, users u
 WHERE r.content LIKE '%판타지 소설의 정석%' AND u.id IN ('user2', 'user3', 'user4', 'user5', 'author1', 'author2')
@@ -423,7 +529,7 @@ UNION ALL
 SELECT r.review_id, u.user_id FROM review r, users u
 WHERE r.content LIKE '%관리자 추천작%' AND u.id IN ('user1', 'user2', 'user3', 'user4', 'user5', 'user6', 'user7', 'user8', 'user9', 'user10');
 
--- 10. 컬렉션 저장 (북마크)
+-- 13. 컬렉션 저장 (북마크)
 INSERT INTO saved_collection (user_id, collection_id)
 SELECT u.user_id, c.collection_id FROM users u, collection c
 WHERE u.id = 'user2' AND c.collection_name = '내가 좋아하는 판타지'
@@ -456,7 +562,7 @@ SELECT u.user_id, c.collection_id FROM users u, collection c
 WHERE u.id = 'author2' AND c.collection_name = '게임 판타지 모음';
 
 
--- 11. 사용자 배지 부여 (조건에 맞게)
+-- 14. 사용자 배지 부여 (조건에 맞게)
 INSERT INTO user_badge (user_id, badge_id)
 -- user1: 리뷰 9개 -> 리뷰 입문, 컬렉션 9개 -> 컬렉션 입문 (1개 더 만들면 중급 달성!)
 SELECT u.user_id, b.badge_id FROM users u, badge b WHERE u.id = 'user1' AND b.badge_name = '리뷰 입문'
@@ -474,7 +580,7 @@ SELECT u.user_id, b.badge_id FROM users u, badge b WHERE u.id = 'author1' AND b.
 UNION ALL
 SELECT u.user_id, b.badge_id FROM users u, badge b WHERE u.id = 'author1' AND b.badge_name = '팔로워 중급';
 
--- 12. 출석 기록 추가 (샘플 데이터)
+-- 15. 출석 기록 추가 (샘플 데이터)
 -- user1: 10일 출석 -> 출석 입문, 출석 중급
 INSERT INTO login_history (user_id, login_date)
 SELECT u.user_id, DATE_SUB(CURDATE(), INTERVAL n DAY)
@@ -535,6 +641,9 @@ UNION ALL SELECT '작가정보', COUNT(*) FROM author_info
 UNION ALL SELECT '소설', COUNT(*) FROM novel
 UNION ALL SELECT '컬렉션', COUNT(*) FROM collection
 UNION ALL SELECT '리뷰', COUNT(*) FROM review
+UNION ALL SELECT '해시태그', COUNT(*) FROM hashtag
+UNION ALL SELECT '리뷰해시태그', COUNT(*) FROM review_hashtag
+UNION ALL SELECT '소설해시태그', COUNT(*) FROM novel_hashtag
 UNION ALL SELECT '팔로우', COUNT(*) FROM follow
 UNION ALL SELECT '배지', COUNT(*) FROM badge
 UNION ALL SELECT '사용자배지', COUNT(*) FROM user_badge

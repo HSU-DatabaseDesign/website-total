@@ -24,7 +24,7 @@
 
 프로젝트는 기본적으로 다음 MySQL 계정을 사용합니다:
 - **사용자명**: `root`
-- **비밀번호**: `1234`
+- **비밀번호**: `test1234`
 
 **사용자명 또는 비밀번호가 다른 경우:**
 `backend/src/main/resources/application.yml` 파일을 열어서 수정하세요:
@@ -33,7 +33,7 @@
 spring:
   datasource:
     username: root  # 본인의 MySQL 사용자명으로 변경
-    password: 1234  # 본인의 MySQL 비밀번호로 변경
+    password: test1234  # 본인의 MySQL 비밀번호로 변경
 ```
 
 #### 2. MySQL 클라이언트 설치 (터미널에서 setup_db.sh 사용 시)
@@ -70,7 +70,7 @@ git clone <repository-url>
 cd <project-folder>
 
 # 2. MySQL 사용자명/비밀번호 확인 및 설정
-# 본인의 MySQL 계정이 root/1234가 아니라면
+# 본인의 MySQL 계정이 root/test1234가 아니라면
 # backend/src/main/resources/application.yml 파일에서 username, password 수정
 
 # 3. 초기 설정 스크립트 실행 (최초 1회만)

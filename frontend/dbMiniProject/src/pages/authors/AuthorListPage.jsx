@@ -52,11 +52,19 @@ export const AuthorListPage = () => {
                 onClick={() => handleAuthorClick(author.userId)}
               >
                 <div className={styles.authorAvatar}>
-                  {author.profileImage ? (
-                    <img src={author.profileImage} alt={author.penName} />
-                  ) : (
-                    <span>{author.penName?.charAt(0) || '?'}</span>
-                  )}
+                  {author.profileImage && !author.profileImage.includes('example.com') ? (
+                    <img 
+                      src={author.profileImage} 
+                      alt={author.penName}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <span style={{ display: author.profileImage && !author.profileImage.includes('example.com') ? 'none' : 'flex' }}>
+                    {author.penName?.charAt(0) || '?'}
+                  </span>
                 </div>
                 <div className={styles.authorInfo}>
                   <h3 className={styles.penName}>{author.penName}</h3>

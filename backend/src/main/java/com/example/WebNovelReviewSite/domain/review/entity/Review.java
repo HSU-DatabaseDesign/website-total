@@ -45,11 +45,7 @@ public class Review {
     @Column(name = "views")
     private Long views;
 
-    //해시태그
-    @ElementCollection
-    @CollectionTable(name = "review_hashtag", joinColumns = @JoinColumn(name = "review_id"))
-    @Column(name = "hashtag")
-    private List<String> hashtags = new ArrayList<>();
+    //해시태그는 ReviewHashtagRepository를 통해 직접 조회 (복합 키 관계로 인해 @OneToMany 사용 불가)
 
     //좋아요
     @ManyToMany(fetch = FetchType.LAZY)

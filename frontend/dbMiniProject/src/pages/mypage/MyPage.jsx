@@ -19,6 +19,7 @@ import { readUserCollectionApi, createCollectionApi, updateCollectionApi, delete
 import { addFollowApi, deleteFollowApi, readFollowingApi, readFollowersApi } from '../../apis/follow/follow'
 import { readUserBadgesApi } from '../../apis/badges/badges'
 import { readUserReviewsApi } from '../../apis/reviews/reviews'
+import { createAuthorApi, readPendingAuthorsApi, approveAuthorApi, readAuthorApi } from '../../apis/authors/authors'
 
 export const MyPage = () => {
   const navigate = useNavigate()
@@ -38,6 +39,17 @@ export const MyPage = () => {
   const [showFollowModal, setShowFollowModal] = useState(false)
   const [followTab, setFollowTab] = useState('following') // 'following' or 'followers'
   const [savedCollections, setSavedCollections] = useState([])
+  const [userRole, setUserRole] = useState(null) // USER, ADMIN, AUTHOR
+  const [isAuthor, setIsAuthor] = useState(false)
+  const [showAuthorForm, setShowAuthorForm] = useState(false)
+  const [authorForm, setAuthorForm] = useState({
+    penName: '',
+    nationality: '',
+    debutYear: '',
+    brief: '',
+    profileImage: ''
+  })
+  const [pendingAuthors, setPendingAuthors] = useState([]) // 관리자용
   
   // 백엔드 컬렉션 데이터를 프론트엔드 형식으로 변환 (이미지 포함)
   const transformCollectionData = async (collections, userId) => {
@@ -68,7 +80,6 @@ export const MyPage = () => {
   const defaultUserData = {
     username: '독서왕',
     email: 'reader@novelnet.com',
-    joinDate: '2024.01.15',
     reviewCount: 0,
     collectionCount: 0,
     badgeCount: 0
@@ -123,12 +134,29 @@ export const MyPage = () => {
         const transformedUser = {
           username: userResult.data.nickname || userResult.data.name,
           email: userResult.data.email,
-          joinDate: '2024.01.15', // TODO: 백엔드에서 가입일 추가 필요
           reviewCount: 0, // TODO: 백엔드에서 리뷰 수 추가 필요
           ratingCount: 0, // TODO: 백엔드에서 별점 수 추가 필요
           collectionCount: 0 // TODO: 백엔드에서 컬렉션 수 추가 필요
         };
         setUserData(transformedUser);
+        setUserRole(userResult.data.role);
+        
+        // 작가인지 확인
+        if (userResult.data.role === 'AUTHOR') {
+          setIsAuthor(true)
+          const authorResult = await readAuthorApi(userId)
+          if (authorResult.ok && authorResult.data) {
+            setIsAuthor(true)
+          }
+        }
+        
+        // 관리자인 경우 승인 대기 작가 목록 조회
+        if (userResult.data.role === 'ADMIN') {
+          const pendingResult = await readPendingAuthorsApi()
+          if (pendingResult.ok && pendingResult.data) {
+            setPendingAuthors(pendingResult.data)
+          }
+        }
       } else {
         setUserData(defaultUserData)
       }
@@ -247,7 +275,6 @@ export const MyPage = () => {
         const transformedUser = {
           username: userResult.data.nickname || userResult.data.name,
           email: userResult.data.email,
-          joinDate: userData.joinDate,
           reviewCount: userData.reviewCount,
           ratingCount: userData.ratingCount,
           collectionCount: userData.collectionCount
@@ -312,6 +339,65 @@ export const MyPage = () => {
   }
   
   // 컬렉션 생성 핸들러
+  // 작가 등록 신청
+  const handleCreateAuthor = async (e) => {
+    e.preventDefault()
+    const userId = localStorage.getItem('userId')
+    if (!userId) {
+      alert('로그인이 필요합니다')
+      return
+    }
+
+    // 필수 항목 검증
+    if (!authorForm.penName || authorForm.penName.trim() === '') {
+      alert('활동명은 필수입니다.')
+      return
+    }
+
+    const authorData = {
+      userId: parseInt(userId),
+      penName: authorForm.penName.trim(),
+      nationality: authorForm.nationality.trim() || '대한민국',
+      debutYear: authorForm.debutYear.trim() || '',
+      brief: authorForm.brief.trim() || '',
+      profileImage: authorForm.profileImage.trim() || ''
+    }
+
+    const result = await createAuthorApi(authorData)
+    if (result.ok) {
+      alert('작가 등록 신청이 완료되었습니다. 관리자 승인 후 작가로 등록됩니다.')
+      setShowAuthorForm(false)
+      setAuthorForm({
+        penName: '',
+        nationality: '',
+        debutYear: '',
+        brief: '',
+        profileImage: ''
+      })
+    } else {
+      alert(result.error || '작가 등록에 실패했습니다.')
+    }
+  }
+
+  // 관리자용: 작가 승인
+  const handleApproveAuthor = async (userId) => {
+    if (!window.confirm('이 작가 신청을 승인하시겠습니까?')) {
+      return
+    }
+
+    const result = await approveAuthorApi(userId)
+    if (result.ok) {
+      alert('작가가 승인되었습니다.')
+      // 승인 대기 목록 새로고침
+      const pendingResult = await readPendingAuthorsApi()
+      if (pendingResult.ok && pendingResult.data) {
+        setPendingAuthors(pendingResult.data)
+      }
+    } else {
+      alert(result.error || '작가 승인에 실패했습니다.')
+    }
+  }
+
   const handleCreateCollection = async (e) => {
     e.preventDefault()
     
@@ -459,7 +545,6 @@ export const MyPage = () => {
           <div className={styles.profileInfo}>
             <h2 className={styles.username}>{userData.username}</h2>
             <p className={styles.email}>{userData.email}</p>
-            <p className={styles.joinDate}>가입일: {userData.joinDate}</p>
           </div>
           <div className={styles.profileStats}>
             <div className={styles.statItem}>
@@ -476,6 +561,15 @@ export const MyPage = () => {
             </div>
           </div>
           <div className={styles.profileActions}>
+            {/* 작가 등록 버튼 (일반 사용자이고 작가가 아닌 경우) */}
+            {userRole === 'USER' && !isAuthor && (
+              <button 
+                className={styles.authorRegisterButton}
+                onClick={() => setShowAuthorForm(true)}
+              >
+                ✍️ 작가 등록
+              </button>
+            )}
             <button 
               className={styles.editButton}
               onClick={() => {
@@ -537,6 +631,97 @@ export const MyPage = () => {
           </form>
         )}
         
+        {/* 관리자용: 작가 승인 대기 목록 */}
+        {userRole === 'ADMIN' && pendingAuthors.length > 0 && (
+          <div className={styles.adminSection}>
+            <h3 className={styles.adminTitle}>🔐 작가 승인 대기 ({pendingAuthors.length}건)</h3>
+            <div className={styles.pendingAuthorsList}>
+              {pendingAuthors.map((author) => (
+                <div key={author.userId} className={styles.pendingAuthorCard}>
+                  <div className={styles.pendingAuthorInfo}>
+                    <h4>{author.penName}</h4>
+                    <p>국적: {author.nationality || '미입력'}</p>
+                    <p>데뷔년도: {author.debutYear || '미입력'}</p>
+                    <p>소개: {author.brief || '미입력'}</p>
+                  </div>
+                  <button
+                    className={styles.approveButton}
+                    onClick={() => handleApproveAuthor(author.userId)}
+                  >
+                    승인
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 작가 등록 모달 */}
+        {showAuthorForm && (
+          <div className={styles.modalOverlay} onClick={() => setShowAuthorForm(false)}>
+            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+              <h3>작가 등록 신청</h3>
+              <form onSubmit={handleCreateAuthor}>
+                <div className={styles.formGroup}>
+                  <label>활동명 (필수) *</label>
+                  <input
+                    type="text"
+                    value={authorForm.penName}
+                    onChange={(e) => setAuthorForm({...authorForm, penName: e.target.value})}
+                    placeholder="작가 활동명을 입력하세요"
+                    required
+                    maxLength={50}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>국적</label>
+                  <input
+                    type="text"
+                    value={authorForm.nationality}
+                    onChange={(e) => setAuthorForm({...authorForm, nationality: e.target.value})}
+                    placeholder="예: 대한민국"
+                    maxLength={50}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>데뷔년도</label>
+                  <input
+                    type="text"
+                    value={authorForm.debutYear}
+                    onChange={(e) => setAuthorForm({...authorForm, debutYear: e.target.value})}
+                    placeholder="예: 2024"
+                    maxLength={4}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>간략 소개</label>
+                  <textarea
+                    value={authorForm.brief}
+                    onChange={(e) => setAuthorForm({...authorForm, brief: e.target.value})}
+                    placeholder="작가에 대한 간략한 소개를 입력하세요"
+                    maxLength={500}
+                    rows={4}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>프로필 이미지 URL</label>
+                  <input
+                    type="text"
+                    value={authorForm.profileImage}
+                    onChange={(e) => setAuthorForm({...authorForm, profileImage: e.target.value})}
+                    placeholder="프로필 이미지 URL (선택사항)"
+                    maxLength={255}
+                  />
+                </div>
+                <div className={styles.formActions}>
+                  <button type="submit" className={styles.saveButton}>신청하기</button>
+                  <button type="button" className={styles.cancelButton} onClick={() => setShowAuthorForm(false)}>취소</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* 탭 네비게이션 */}
         <nav className={styles.tabNav}>
           {tabs.map((tab, index) => (
