@@ -46,4 +46,18 @@ public class AuthorController {
         java.util.List<AuthorResponseDTO.AuthorDetailDto> authors = authorService.getAllAuthors();
         return ResponseEntity.ok(authors);
     }
+
+    @Operation(summary = "승인 대기 작가 목록 조회", description = "관리자용: 승인 대기 중인 작가 신청 목록을 조회합니다.")
+    @GetMapping("/pending")
+    public ResponseEntity<java.util.List<AuthorResponseDTO.AuthorDetailDto>> getPendingAuthors() {
+        java.util.List<AuthorResponseDTO.AuthorDetailDto> authors = authorService.getPendingAuthors();
+        return ResponseEntity.ok(authors);
+    }
+
+    @Operation(summary = "작가 승인", description = "관리자용: 작가 신청을 승인하고 사용자 역할을 AUTHOR로 변경합니다.")
+    @PostMapping("/{userId}/approve")
+    public ResponseEntity<Void> approveAuthor(@PathVariable Long userId) {
+        authorService.approveAuthor(userId);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -16,7 +16,7 @@ public class Follow {
 
     @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "follower_id",nullable = false)
     private User follower; // 팔로우 거는 사람
 
     @MapsId("targetId")

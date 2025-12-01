@@ -61,4 +61,8 @@ public class Novel {
     //novel - review
     @OneToMany(mappedBy = "novel", fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
+
+    //novel - hashtag (다대다 관계)
+    @OneToMany(mappedBy = "novel", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NovelHashtag> novelHashtags = new ArrayList<>();
 }

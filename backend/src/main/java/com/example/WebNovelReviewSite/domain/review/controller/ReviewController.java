@@ -76,4 +76,11 @@ public class ReviewController {
         List<ReviewResponseDTO.ReviewDetailDto> reviews = reviewService.getReviewsByUser(userId);
         return ResponseEntity.ok(reviews);
     }
+    
+    @Operation(summary = "전체 리뷰 목록 조회", description = "모든 리뷰를 최신순으로 조회합니다.")
+    @GetMapping
+    public ResponseEntity<List<ReviewResponseDTO.ReviewDetailDto>> getAllReviews() {
+        List<ReviewResponseDTO.ReviewDetailDto> reviews = reviewService.getAllReviews();
+        return ResponseEntity.ok(reviews);
+    }
 }

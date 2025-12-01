@@ -3,7 +3,7 @@ import api from "../instance"
 //팔로우 추가
 export const addFollowApi = async(followerId, targetId) => {
   try {
-    const response = await api.post(`follow?followerId=${followerId}&targetId=${targetId}`);
+    const response = await api.post(`/follow?followerId=${followerId}&targetId=${targetId}`); // 절대 경로로 변경
     return { ok: true, data: response.data };
   } catch(error) {
     console.error(error);
@@ -13,7 +13,7 @@ export const addFollowApi = async(followerId, targetId) => {
 //팔로우 삭제
 export const deleteFollowApi = async(followerId, targetId) => {
   try {
-    const response = await api.delete(`follow?followerId=${followerId}&targetId=${targetId}`);
+    const response = await api.delete(`/follow?followerId=${followerId}&targetId=${targetId}`); // 절대 경로로 변경
     return { ok: true, data: response.data };
   } catch(error) {
     console.error(error);
@@ -23,7 +23,7 @@ export const deleteFollowApi = async(followerId, targetId) => {
 //팔로잉 목록 조회
 export const readFollowingApi = async(userId) => {
   try {
-    const response = await api.get(`follow/${userId}/following`);
+    const response = await api.get(`/follow/${userId}/following`); // 절대 경로로 변경
     return { ok: true, data: response.data };
   } catch(error) {
     console.error(error);
@@ -34,7 +34,7 @@ export const readFollowingApi = async(userId) => {
 //팔로워 목록 조회
 export const readFollowersApi = async(userId) => {
   try {
-    const response = await api.get(`follow/${userId}/followers`);
+    const response = await api.get(`/follow/${userId}/followers`); // 절대 경로로 변경
     return { ok: true, data: response.data };
   } catch(error) {
     console.error(error);

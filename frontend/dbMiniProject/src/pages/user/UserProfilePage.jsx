@@ -9,6 +9,7 @@ import { readUserCollectionApi, readCollectionDetailApi } from '../../apis/colle
 import { addFollowApi, deleteFollowApi, readFollowingApi, readFollowersApi } from '../../apis/follow/follow'
 import { readAuthorApi } from '../../apis/authors/authors'
 import { readUserBadgesApi } from '../../apis/badges/badges'
+import { readNovelApi } from '../../apis/novels/novel'
 
 // 소설 ID에 맞는 이미지 가져오기 (컴포넌트 외부에 정의)
 const getNovelImage = (novelId) => {
@@ -36,6 +37,7 @@ export const UserProfilePage = () => {
   const [isFollowing, setIsFollowing] = useState(false)
   const [isOwnProfile, setIsOwnProfile] = useState(false)
   const [userBadges, setUserBadges] = useState([])
+  const [novels, setNovels] = useState([])
 
   const tabs = isAuthor ? ['작품', '리뷰', '컬렉션', '배지'] : ['리뷰', '컬렉션', '배지']
   
@@ -71,6 +73,15 @@ export const UserProfilePage = () => {
       if (authorResult.ok && authorResult.data) {
         setIsAuthor(true)
         setAuthorInfo(authorResult.data)
+        
+        // 작가의 작품 조회 (작가 이름으로 필터링)
+        const novelsResult = await readNovelApi()
+        if (novelsResult.ok && novelsResult.data) {
+          const authorNovels = novelsResult.data.filter(
+            novel => novel.novelAuthor === authorResult.data.penName
+          )
+          setNovels(authorNovels)
+        }
       }
 
       // 유저의 리뷰 조회
@@ -253,10 +264,10 @@ export const UserProfilePage = () => {
           {/* 작품 탭 (작가인 경우에만) */}
           {isAuthor && selectedTab === 0 && (
             <div className={styles.novelGrid}>
-              {!authorInfo?.novels || authorInfo.novels.length === 0 ? (
+              {novels.length === 0 ? (
                 <div className={styles.emptyMessage}>작성한 작품이 없습니다.</div>
               ) : (
-                authorInfo.novels.map((novel) => (
+                novels.map((novel) => (
                   <div 
                     key={novel.novelId} 
                     className={styles.novelCard}

@@ -29,8 +29,12 @@ public class NovelController {
     @Operation(summary = "웹소설 상세 조회", description = "웹소설 ID로 상세 정보를 조회합니다.")
     @GetMapping("/{novelId}")
     public ResponseEntity<NovelResponseDTO.NovelDetailDto> getNovel(@PathVariable Long novelId) {
-        NovelResponseDTO.NovelDetailDto novel = novelService.getNovel(novelId);
-        return ResponseEntity.ok(novel);
+        try {
+            NovelResponseDTO.NovelDetailDto novel = novelService.getNovel(novelId);
+            return ResponseEntity.ok(novel);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "장르별 웹소설 조회", description = "특정 장르의 웹소설 목록을 조회합니다.")

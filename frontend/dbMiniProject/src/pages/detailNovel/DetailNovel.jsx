@@ -6,6 +6,7 @@ import { Novel1, Novel2, Novel3, Novel4, Novel5, Novel6, Novel7, Novel8, Novel9,
 import { readDetailNovelApi } from '../../apis/novels/novel'
 import { readNovelReveiwApi, createReviewApi, updateReviewApi, deleteReviewApi, addLikeApi, deleteLikeApi } from '../../apis/reviews/reviews'
 import { addNovelCollectionApi, readUserCollectionApi, createCollectionApi } from '../../apis/collections/collections'
+import { readAllHashtagsApi } from '../../apis/hashtags/hashtags'
 
 export const DetailNovel = () => {
   const { id } = useParams()
@@ -15,7 +16,8 @@ export const DetailNovel = () => {
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [showReviewForm, setShowReviewForm] = useState(false)
-  const [reviewForm, setReviewForm] = useState({ rating: 5, content: '' })
+  const [reviewForm, setReviewForm] = useState({ rating: 5, content: '', hashtags: [] })
+  const [availableHashtags, setAvailableHashtags] = useState([])
   const [editingReviewId, setEditingReviewId] = useState(null)
   const [showCollectionModal, setShowCollectionModal] = useState(false)
   const [userCollections, setUserCollections] = useState([])
@@ -67,7 +69,7 @@ export const DetailNovel = () => {
   
   const starDistribution = calculateStarDistribution(reviews)
   
-  const tabs = ["리뷰", "평점", "공감순", "높은평점순", "최신순"]
+  const tabs = ["공감순", "높은평점순", "낮은평점순"]
   
   // 플랫폼 한글 변환
   const getPlatformName = (platform) => {
@@ -105,10 +107,17 @@ export const DetailNovel = () => {
       totalReviews: novel.reviewCount || 0,
       status: novel.novelStatus === 'COMPLETED' ? '완결작' : '연재중',
       platform: getPlatformName(novel.platform),
+      hashtags: novel.hashtags || [],
     };
   };
   
   const transformReviewData = (reviews) => {
+    // reviews가 배열이 아니거나 null/undefined인 경우 빈 배열 반환
+    if (!reviews || !Array.isArray(reviews)) {
+      console.warn('reviews가 배열이 아닙니다:', reviews);
+      return [];
+    }
+    
     return reviews.map(review => ({
       id: review.reviewId,
       userId: review.userId,
@@ -118,6 +127,7 @@ export const DetailNovel = () => {
       content: review.content,
       date: review.createdAt || '날짜 없음',
       likes: review.likeCount || 0,
+      hashtags: review.hashtags || [],
     }));
   };
   
@@ -126,6 +136,28 @@ export const DetailNovel = () => {
     navigate(`/user/${userId}`)
   };
   
+  // 해시태그 목록 조회
+  useEffect(() => {
+    const fetchHashtags = async () => {
+      console.log('해시태그 목록 조회 시작...')
+      const hashtagsResult = await readAllHashtagsApi()
+      console.log('해시태그 조회 결과:', hashtagsResult)
+      
+      if (hashtagsResult.ok && hashtagsResult.data) {
+        // 배열인지 확인하고 설정
+        const hashtags = Array.isArray(hashtagsResult.data) 
+          ? hashtagsResult.data 
+          : []
+        console.log('설정할 해시태그 목록:', hashtags)
+        setAvailableHashtags(hashtags)
+      } else {
+        console.warn('해시태그 조회 실패 또는 데이터 없음:', hashtagsResult)
+        setAvailableHashtags([])
+      }
+    }
+    fetchHashtags()
+  }, [])
+
   // API 호출: 웹소설 상세 정보 및 리뷰 조회
   useEffect(() => {
     const fetchNovelDetails = async () => {
@@ -143,9 +175,14 @@ export const DetailNovel = () => {
       // 웹소설 리뷰 목록 조회
       const reviewResult = await readNovelReveiwApi(id)
       if (reviewResult.ok && reviewResult.data) {
-        const transformedReviews = transformReviewData(reviewResult.data);
+        // API 응답이 배열인지 확인
+        const reviewsData = Array.isArray(reviewResult.data) 
+          ? reviewResult.data 
+          : (reviewResult.data.data || []);
+        const transformedReviews = transformReviewData(reviewsData);
         setReviews(transformedReviews);
       } else {
+        console.warn('리뷰 조회 실패:', reviewResult);
         setReviews([]);
       }
       
@@ -159,6 +196,12 @@ export const DetailNovel = () => {
   const handleCreateReview = async (e) => {
     e.preventDefault()
     
+    // 수정 모드인 경우 handleUpdateReview 호출
+    if (editingReviewId) {
+      await handleUpdateReview(editingReviewId)
+      return
+    }
+    
     const userId = localStorage.getItem('userId');
     if (!userId) {
       alert('로그인이 필요합니다.')
@@ -171,14 +214,15 @@ export const DetailNovel = () => {
       novelId: parseInt(id),
       content: reviewForm.content,
       star: reviewForm.rating,
-      hashtags: [] // TODO: 해시태그 기능 추가 시 사용
+      hashtags: reviewForm.hashtags
     }
     
     const result = await createReviewApi(reviewData)
     if (result.ok) {
       alert('리뷰가 작성되었습니다!')
       setShowReviewForm(false)
-      setReviewForm({ rating: 5, content: '' })
+      setReviewForm({ rating: 5, content: '', hashtags: [] })
+      setEditingReviewId(null) // 수정 모드 초기화
       // 리뷰 목록 새로고침
       const reviewResult = await readNovelReveiwApi(id)
       if (reviewResult.ok && reviewResult.data) {
@@ -190,12 +234,26 @@ export const DetailNovel = () => {
     }
   }
   
+  // 리뷰 수정 폼 열기
+  const handleEditReview = (reviewId) => {
+    const review = reviews.find(r => r.id === reviewId)
+    if (review) {
+      setEditingReviewId(reviewId)
+      setShowReviewForm(true)
+      setReviewForm({
+        rating: review.rating,
+        content: review.content,
+        hashtags: review.hashtags || []
+      })
+    }
+  }
+
   // 리뷰 수정 핸들러
   const handleUpdateReview = async (reviewId) => {
     const updateData = {
       content: reviewForm.content,
       star: reviewForm.rating,
-      hashtags: []
+      hashtags: reviewForm.hashtags
     };
     
     const result = await updateReviewApi(reviewId, updateData)
@@ -203,7 +261,7 @@ export const DetailNovel = () => {
       alert('리뷰가 수정되었습니다!')
       setEditingReviewId(null)
       setShowReviewForm(false)
-      setReviewForm({ rating: 5, content: '' })
+      setReviewForm({ rating: 5, content: '', hashtags: [] })
       // 리뷰 목록 새로고침
       const reviewResult = await readNovelReveiwApi(id)
       if (reviewResult.ok && reviewResult.data) {
@@ -360,6 +418,15 @@ export const DetailNovel = () => {
               <h2 className={styles.title}>{novelData.title}</h2>
               <p className={styles.author}>{novelData.author}</p>
               <p className={styles.platform}>📱 {novelData.platform}</p>
+              {novelData.hashtags && novelData.hashtags.length > 0 && (
+                <div className={styles.novelHashtags}>
+                  {novelData.hashtags.map((tag, index) => (
+                    <span key={index} className={styles.hashtagTag}>
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           
@@ -418,6 +485,72 @@ export const DetailNovel = () => {
                   onChange={(e) => setReviewForm({...reviewForm, content: e.target.value})}
                   required
                 />
+                <div className={styles.hashtagSection}>
+                  <label>해시태그 선택 (최대 10개):</label>
+                  <div className={styles.hashtagSelectionGrid}>
+                    {Array.isArray(availableHashtags) && availableHashtags.length > 0 ? (
+                      availableHashtags.map((tag) => {
+                        const isSelected = reviewForm.hashtags.includes(tag)
+                        return (
+                          <button
+                            key={tag}
+                            type="button"
+                            className={`${styles.hashtagSelectButton} ${isSelected ? styles.selected : ''}`}
+                            disabled={!isSelected && reviewForm.hashtags.length >= 10}
+                            onClick={() => {
+                              if (isSelected) {
+                                // 해제
+                                setReviewForm({
+                                  ...reviewForm,
+                                  hashtags: reviewForm.hashtags.filter(t => t !== tag)
+                                })
+                              } else {
+                                // 선택
+                                if (reviewForm.hashtags.length < 10) {
+                                  setReviewForm({
+                                    ...reviewForm,
+                                    hashtags: [...reviewForm.hashtags, tag]
+                                  })
+                                }
+                              }
+                            }}
+                          >
+                            #{tag}
+                          </button>
+                        )
+                      })
+                    ) : (
+                      <p className={styles.hashtagLoading}>해시태그를 불러오는 중...</p>
+                    )}
+                  </div>
+                  {reviewForm.hashtags.length > 0 && (
+                    <div className={styles.selectedHashtags}>
+                      <p className={styles.selectedLabel}>선택된 해시태그:</p>
+                      <div className={styles.hashtagList}>
+                        {reviewForm.hashtags.map((tag, index) => (
+                          <span key={index} className={styles.hashtagTag}>
+                            #{tag}
+                            <button
+                              type="button"
+                              className={styles.removeHashtagButton}
+                              onClick={() => {
+                                setReviewForm({
+                                  ...reviewForm,
+                                  hashtags: reviewForm.hashtags.filter((_, i) => i !== index)
+                                })
+                              }}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {reviewForm.hashtags.length >= 10 && (
+                    <p className={styles.hashtagLimit}>해시태그는 최대 10개까지 선택할 수 있습니다.</p>
+                  )}
+                </div>
                 <button type="submit" className={styles.submitReviewButton}>리뷰 등록</button>
               </form>
             )}
@@ -440,7 +573,20 @@ export const DetailNovel = () => {
               {reviews.length === 0 ? (
                 <div className={styles.emptyReviews}>아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</div>
               ) : (
-                reviews.map((review) => (
+                (() => {
+                  // 정렬된 리뷰 목록 생성
+                  const sortedReviews = [...reviews];
+                  if (selectedTab === 0) {
+                    // 공감순 (좋아요 수 내림차순)
+                    sortedReviews.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+                  } else if (selectedTab === 1) {
+                    // 높은평점순 (평점 내림차순)
+                    sortedReviews.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                  } else if (selectedTab === 2) {
+                    // 낮은평점순 (평점 오름차순)
+                    sortedReviews.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+                  }
+                  return sortedReviews.map((review) => (
                   <div key={review.id} className={styles.reviewItem}>
                     <div className={styles.reviewHeader}>
                       <div className={styles.userInfo}>
@@ -461,7 +607,7 @@ export const DetailNovel = () => {
                         <div className={styles.reviewManageButtons}>
                           <button 
                             className={styles.editButton}
-                            onClick={() => handleUpdateReview(review.id)}
+                            onClick={() => handleEditReview(review.id)}
                           >
                             ✏️ 수정
                           </button>
@@ -475,6 +621,15 @@ export const DetailNovel = () => {
                       )}
                     </div>
                     <p className={styles.reviewContent}>{review.content}</p>
+                    {review.hashtags && review.hashtags.length > 0 && (
+                      <div className={styles.reviewHashtags}>
+                        {review.hashtags.map((tag, index) => (
+                          <span key={index} className={styles.hashtagTag}>
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <div className={styles.reviewFooter}>
                       <span className={styles.reviewDate}>{review.date}</span>
                       <div className={styles.reviewActions}>
@@ -487,7 +642,8 @@ export const DetailNovel = () => {
                       </div>
                     </div>
                   </div>
-                ))
+                  ));
+                })()
               )}
             </div>
           </div>

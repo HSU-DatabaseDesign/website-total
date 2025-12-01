@@ -18,6 +18,7 @@ import { readAuthorApi } from '../../apis/authors/authors'
 import { readUserReviewsApi } from '../../apis/reviews/reviews'
 import { readUserCollectionApi, readCollectionDetailApi } from '../../apis/collections/collections'
 import { readNovelApi } from '../../apis/novels/novel'
+import { addFollowApi, deleteFollowApi, readFollowingApi } from '../../apis/follow/follow'
 
 export const AuthorProfilePage = () => {
   const { userId } = useParams()
@@ -28,12 +29,17 @@ export const AuthorProfilePage = () => {
   const [novels, setNovels] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedTab, setSelectedTab] = useState(0)
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [isOwnProfile, setIsOwnProfile] = useState(false)
 
   const tabs = ['작품', '리뷰', '컬렉션']
 
   useEffect(() => {
     const fetchAuthorData = async () => {
       setLoading(true)
+      
+      const currentUserId = localStorage.getItem('userId')
+      setIsOwnProfile(currentUserId === userId)
 
       // 작가 프로필 조회
       const authorResult = await readAuthorApi(userId)
@@ -86,6 +92,17 @@ export const AuthorProfilePage = () => {
         setCollections(collectionsWithImages)
       }
 
+      // 현재 로그인한 유저가 이 작가를 팔로우하고 있는지 확인
+      if (currentUserId && currentUserId !== userId) {
+        const myFollowingResult = await readFollowingApi(currentUserId)
+        if (myFollowingResult.ok && myFollowingResult.data) {
+          const isFollowingUser = myFollowingResult.data.some(
+            f => f.userId === parseInt(userId)
+          )
+          setIsFollowing(isFollowingUser)
+        }
+      }
+
       setLoading(false)
     }
 
@@ -98,6 +115,29 @@ export const AuthorProfilePage = () => {
 
   const handleCollectionClick = (collectionId) => {
     navigate(`/collection/${collectionId}`)
+  }
+
+  const handleFollow = async () => {
+    const currentUserId = localStorage.getItem('userId')
+    if (!currentUserId) {
+      alert('로그인이 필요합니다.')
+      navigate('/login')
+      return
+    }
+
+    if (isFollowing) {
+      // 언팔로우
+      const result = await deleteFollowApi(currentUserId, userId)
+      if (result.ok) {
+        setIsFollowing(false)
+      }
+    } else {
+      // 팔로우
+      const result = await addFollowApi(currentUserId, userId)
+      if (result.ok) {
+        setIsFollowing(true)
+      }
+    }
   }
 
   if (loading || !author) {
@@ -118,11 +158,19 @@ export const AuthorProfilePage = () => {
         {/* 작가 프로필 헤더 */}
         <div className={styles.profileHeader}>
           <div className={styles.profileAvatar}>
-            {author.profileImage ? (
-              <img src={author.profileImage} alt={author.penName} />
-            ) : (
-              <span>{author.penName?.charAt(0) || '?'}</span>
-            )}
+            {author.profileImage && !author.profileImage.includes('example.com') ? (
+              <img 
+                src={author.profileImage} 
+                alt={author.penName}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <span style={{ display: author.profileImage && !author.profileImage.includes('example.com') ? 'none' : 'flex' }}>
+              {author.penName?.charAt(0) || '?'}
+            </span>
           </div>
           <div className={styles.profileInfo}>
             <div className={styles.authorBadge}>✍️ 작가</div>
@@ -145,6 +193,14 @@ export const AuthorProfilePage = () => {
               <span className={styles.statLabel}>컬렉션</span>
             </div>
           </div>
+          {!isOwnProfile && (
+            <button 
+              className={`${styles.followButton} ${isFollowing ? styles.following : ''}`}
+              onClick={handleFollow}
+            >
+              {isFollowing ? '팔로잉 ✓' : '팔로우'}
+            </button>
+          )}
         </div>
 
         {/* 탭 네비게이션 */}
