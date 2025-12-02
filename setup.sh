@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "========================================"
-echo "WebNovelReviewSite 초기 설정"
+echo "웹소설 리뷰 사이트 초기 설정"
 echo "========================================"
 
 # 1. 모든 sh 파일에 실행 권한 부여
@@ -36,8 +36,8 @@ echo "========================================"
 echo "✓ 초기 설정 완료!"
 echo ""
 echo "사용 가능한 명령어:"
-echo "  ./start_all.sh      - 백엔드 + 프론트엔드 동시 실행"
-echo "  ./start_backend.sh  - 백엔드만 실행"
-echo "  ./start_frontend.sh - 프론트엔드만 실행"
-echo "  ./setup_db.sh       - 데이터베이스 초기화"
+echo "  ./start_all.sh  - 서버 시작 (백엔드 + 프론트엔드)"
+echo "  ./setup_db.sh   - 데이터베이스 재설정"
+echo ""
+echo "서버 종료: 터미널에서 Ctrl+C"
 echo "========================================"

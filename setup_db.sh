@@ -4,12 +4,13 @@ echo "========================================"
 echo "MySQL 데이터베이스 초기화 시작"
 echo "========================================"
 
-# application.yml에 설정된 비밀번호 사용 (기본값: test1234)
-MYSQL_PASSWORD="test1234"
+# application.yml에 설정된 비밀번호 사용 (기본값: 1234)
+MYSQL_PASSWORD="1234"
 
 echo ""
 echo "MySQL root 비밀번호: $MYSQL_PASSWORD 사용"
-echo "※ 비밀번호가 다르면 backend/src/main/resources/application.yml 파일을 수정하세요"
+echo "※ 비밀번호가 다르면 이 스크립트의 MYSQL_PASSWORD 변수를 수정하세요"
+echo "   또는 backend/src/main/resources/application.yml 파일도 함께 수정하세요"
 echo ""
 
 # MySQL 클라이언트 경로 찾기
